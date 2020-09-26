@@ -100,11 +100,11 @@ do -- to server
 		end
 
 		net.Start("pac_submit")
-			local ret,err = pace.net.SerializeTable(data)
-			if ret == nil then
-				pace.Notify(false, "unable to transfer data to server: "..tostring(err or "too big"), name)
-				return false
-			end
+		local ret,err = pace.net.SerializeTable(data)
+		if ret == nil then
+			pace.Notify(false, "unable to transfer data to server: "..tostring(err or "too big"), name)
+			return false
+		end
 		net.SendToServer()
 
 		return true
@@ -263,22 +263,28 @@ do
 				end
 			end
 
+			local hookID = tostring( data.owner:EntIndex() )
+
 			-- behaviour of this (if one of entities on this hook becomes invalid)
 			-- is undefined if DLib is not installed, but anyway
-			hook.Add('pace_OnUseOnlyUpdates', data.owner, function()
+			hook.Add('pace_OnUseOnlyUpdates', hookID, function()
 				if pac_onuse_only:GetBool() then
 					pac.ToggleIgnoreEntity(data.owner, data.owner.pac_onuse_only_check, 'pac_onuse_only')
 				else
 					pac.ToggleIgnoreEntity(data.owner, false, 'pac_onuse_only')
 				end
 			end)
+
+			data.owner:CallOnRemove("OnRemoveCleanup", function()
+				hook.Remove('pace_OnUseOnlyUpdates', hookID)
+			end)
 		else
 			return defaultHandlerNow(data)
 		end
 
 		local validTransmission = type(data.partID) == 'number' and
-			type(data.totalParts) == 'number' and
-			type(data.transmissionID) == 'number'
+		type(data.totalParts) == 'number' and
+		type(data.transmissionID) == 'number'
 
 		if not validTransmission then
 			local func = defaultHandler(data)
@@ -344,7 +350,7 @@ end)
 function pace.Notify(allowed, reason, name)
 	name = name or "???"
 
-	 if allowed == true then
+	if allowed == true then
 		pac.Message(string.format('Your part %q has been applied', name))
 	else
 		chat.AddText(Color(255, 255, 0), "[PAC3] ", Color(255, 0, 0), string.format('The server rejected applying your part (%q) - %s', name, reason))
