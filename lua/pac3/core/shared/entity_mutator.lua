@@ -79,6 +79,10 @@ function emut.MutateEntity(ply, class_name, ent, ...)
 	assert(emut.registered_mutators[class_name], "invalid mutator " .. class_name)
 	assert(IsValid(ent), "entity is invalid")
 
+	if hook.Run("PACMutateEntity", owner, ent, class_name, ...) == false then
+		return
+	end
+
 	if SERVER then
 		if not override_enabled then
 			if not emut.registered_mutators[class_name].cvar:GetBool() then
