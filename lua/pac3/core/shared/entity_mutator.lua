@@ -79,7 +79,7 @@ function emut.MutateEntity(ply, class_name, ent, ...)
 	assert(emut.registered_mutators[class_name], "invalid mutator " .. class_name)
 	assert(IsValid(ent), "entity is invalid")
 
-	if hook.Run("PACMutateEntity", owner, ent, class_name, ...) == false then
+	if hook.Run("PACMutateEntity", ply, ent, class_name, ...) == false then
 		return
 	end
 
