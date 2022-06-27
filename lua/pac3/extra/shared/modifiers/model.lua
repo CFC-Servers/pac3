@@ -1,5 +1,3 @@
-local MIN, MAX = 0.1, 10
-
 local ALLOW_TO_CHANGE = pacx.AddServerModifier("model", function(enable)
 	if not enable then
 		for _, ent in ipairs(ents.GetAll()) do
@@ -32,8 +30,6 @@ function pacx.GetModel(ent)
 end
 
 function pacx.SetModel(ent, path, ply)
-    if hook.Run("PACApplyModel", ply, path) == false then return end
-
 	if not path or path == "" then
 		if ent.pacx_model_original then
 			ent:SetModel(ent.pacx_model_original)
@@ -49,6 +45,8 @@ function pacx.SetModel(ent, path, ply)
 
 		return
 	end
+
+	if hook.Run("PACApplyModel", ply, path) == false then return end
 
 	if CLIENT then
 		pacx.SetModelOnServer(ent, path)
