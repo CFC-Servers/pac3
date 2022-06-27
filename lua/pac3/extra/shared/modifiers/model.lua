@@ -14,6 +14,7 @@ end)
 
 function pacx.SetModelOnServer(ent, path)
 	path = path or ""
+
 	net.Start("pacx_setmodel")
 		net.WriteEntity(ent)
 		net.WriteString(path)
@@ -31,6 +32,8 @@ function pacx.GetModel(ent)
 end
 
 function pacx.SetModel(ent, path, ply)
+    if hook.Run("PACApplyModel", ply, path) == false then return end
+
 	if not path or path == "" then
 		if ent.pacx_model_original then
 			ent:SetModel(ent.pacx_model_original)

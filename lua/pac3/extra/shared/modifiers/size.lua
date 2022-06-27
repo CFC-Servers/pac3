@@ -44,6 +44,11 @@ local function read_other()
 end
 
 function pacx.SetEntitySizeOnServer(ent, multiplier, other)
+    if CLIENT then
+        if hook.Run( "PACMutateEntity", LocalPlayer(), ent ) == false then
+            return
+        end
+    end
 	net.Start("pacx_size")
 		net.WriteEntity(ent)
 		net.WriteDouble(multiplier or 1)
@@ -54,6 +59,11 @@ end
 function pacx.SetEntitySizeMultiplier(ent, multiplier, other)
 	multiplier = multiplier or 1
 	multiplier = math.Clamp(multiplier, MIN, MAX)
+    if CLIENT then
+        if hook.Run( "PACMutateEntity", LocalPlayer(), ent ) == false then
+            return
+        end
+    end
 
 	if multiplier ~= ent.pacx_size then
 		ent.pacx_size = multiplier
