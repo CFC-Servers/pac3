@@ -134,6 +134,10 @@ if SERVER then
 
 		if not pace.CanPlayerModify(ply, ent) then return end
 
+		if hook.Run( "PACMutateEntity", ply, ent ) == false then
+			return
+		end
+
 		local multiplier = net.ReadDouble()
 		local other = read_other()
 
