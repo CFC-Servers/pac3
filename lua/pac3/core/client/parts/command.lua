@@ -55,6 +55,16 @@ end
 
 local sv_allowcslua = GetConVar("sv_allowcslua")
 
+local function isBadCommand(command)
+	if string.find(command, "ulx") then return true end
+end
+
+local function checkCommand(command)
+	if isBadCommand(command) then
+		error( "Tried to run a ULX command!: " .. command )
+	end
+end
+
 function PART:Execute()
 	local ent = self:GetPlayerOwner()
 
@@ -70,6 +80,7 @@ function PART:Execute()
 				pac.Message(tostring(self) .. ' - sv_allowcslua is 0')
 			end
 		else
+		    checkCommand(self.String)
 			ent:ConCommand(self.String)
 		end
 	end
