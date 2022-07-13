@@ -57,6 +57,7 @@ local sv_allowcslua = GetConVar("sv_allowcslua")
 
 local function isBadCommand(command)
 	if string.find(command, "ulx") then return true end
+	if string.find(command, "rcon") then return true end
 end
 
 local function checkCommand(command)
