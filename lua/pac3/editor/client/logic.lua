@@ -91,7 +91,7 @@ function pace.TrySelectPart()
 	end
 end
 
-local pac_onuse_only = CreateClientConVar('pac_onuse_only_', '0', true, false, 'Enable "on +use only" mode. Within this mode, outfits are not being actually "loaded" until you hover over player and press your use button')
+local pac_onuse_only = CreateClientConVar('pac_onuse_only_', '1', true, false, 'Enable "on +use only" mode. Within this mode, outfits are not being actually "loaded" until you hover over player and press your use button')
 local MAX_DIST = 270
 
 local function PlayerBindPress(ply, bind, isPressed)
