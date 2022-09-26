@@ -206,14 +206,14 @@ do -- from server
 end
 
 do
-	local pac_onuse_only = CreateClientConVar('pac_onuse_only', '0', true, false, 'Enable "on +use only" mode. Within this mode, outfits are not being actually "loaded" until you hover over player and press your use button')
+	local pac_onuse_only = CreateClientConVar('pac_onuse_only_', '0', true, false, 'Enable "on +use only" mode. Within this mode, outfits are not being actually "loaded" until you hover over player and press your use button')
 	local transmissions = {}
 
 	function pace.OnUseOnlyUpdates(cvar, ...)
 		hook.Call('pace_OnUseOnlyUpdates', nil, ...)
 	end
 
-	cvars.AddChangeCallback("pac_onuse_only", pace.OnUseOnlyUpdates, "PAC3")
+	cvars.AddChangeCallback("pac_onuse_only_", pace.OnUseOnlyUpdates, "PAC3")
 
 	concommand.Add("pac_onuse_reset", function()
 		for i, ent in ipairs(ents.GetAll()) do

@@ -91,7 +91,7 @@ function pace.TrySelectPart()
 	end
 end
 
-local pac_onuse_only = CreateClientConVar('pac_onuse_only', '0', true, false, 'Enable "on +use only" mode. Within this mode, outfits are not being actually "loaded" until you hover over player and press your use button')
+local pac_onuse_only = CreateClientConVar('pac_onuse_only_', '0', true, false, 'Enable "on +use only" mode. Within this mode, outfits are not being actually "loaded" until you hover over player and press your use button')
 local MAX_DIST = 270
 
 local function PlayerBindPress(ply, bind, isPressed)
@@ -141,7 +141,7 @@ local function HUDPaint(ply, bind, isPressed)
 	if lastDisplayLabel < RealTime() then return end
 
 	local alpha = (lastDisplayLabel - RealTime()) / 3
-	draw.DrawText(L"Press +use to reveal PAC3 outfit", "pac_onuse_only_hint", ScrW() / 2, ScrH() * 0.3, Color(255, 255, 255, alpha * 255), TEXT_ALIGN_CENTER)
+	draw.DrawText("Press " .. string.upper( input.LookupBinding( "+use" ) ) .. " to reveal PAC3 outfit", "pac_onuse_only_hint", ScrW() / 2, ScrH() * 0.3, Color(255, 255, 255, alpha * 255), TEXT_ALIGN_CENTER)
 end
 
 hook.Add("PlayerBindPress", "pac_onuse_only", PlayerBindPress)
