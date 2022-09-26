@@ -186,7 +186,7 @@ function pace.ClientSettingsMenu(self)
 		self:NumSlider(L"Max render time: ", "pac_max_render_time", 0, 50, 0)
 
 	self:CheckBox(L"Friend only", "pac_friendonly")
-	self:CheckBox(L"Reveal outfits only on +use", "pac_onuse_only")
+	self:CheckBox("Reveal outfits only on ".. string.upper(input.LookupBinding("+use")), "pac_onuse_only_")
 	self:CheckBox(L"Hide outfits that some folks can find disturbing", "pac_hide_disturbing")
 
 	self:NumSlider(
