@@ -147,9 +147,10 @@ function emut.MutateEntity(ply, class_name, ent, ...)
 end
 
 function emut.RestoreMutations(ply, class_name, ent)
-	assert(IsValid(ply) and ply:IsPlayer(), "player is invalid")
-	assert(emut.registered_mutators[class_name], "invalid mutator " .. class_name)
-	assert(IsValid(ent), "entity is invalid")
+	if not IsValid( ply ) then return end
+	if not IsValid( ent ) then return end
+	if not ply:IsPlayer() then return end
+	if not emut.registered_mutators[class_name] then return end
 
 	if SERVER then
 		if not override_enabled then
