@@ -646,14 +646,13 @@ do
 
 	function ss_methods:readType( typeid )
 		typeid = typeid or self:readUInt8(8)
+		if not typeid then return end
 
 		local func = read_functions[typeid]
 
 		if func then
 			return func(self)
 		end
-
-		error("StringStream:readType: Couldn't read type " .. tostring(typeid))
 	end
 end
 

@@ -1,5 +1,7 @@
 -- rate limit?
 
+local IsValid = IsValid
+
 if pac.emut then
 	for _, ent in ipairs(ents.GetAll()) do
 		if ent.pac_mutations then
@@ -75,9 +77,10 @@ local suppress_send_to_server = false
 local override_enabled = false
 
 function emut.MutateEntity(ply, class_name, ent, ...)
-	assert(IsValid(ply) and ply:IsPlayer(), "player is invalid")
-	assert(emut.registered_mutators[class_name], "invalid mutator " .. class_name)
-	assert(IsValid(ent), "entity is invalid")
+	if not IsValid( ply ) then return end
+	if not IsValid( ent ) then return end
+	if not ply:IsPlayer() then return end
+	if not emut.registered_mutators[class_name] then return end
 
 	if hook.Run("PACMutateEntity", ply, ent, class_name, ...) == false then
 		return
@@ -144,9 +147,10 @@ function emut.MutateEntity(ply, class_name, ent, ...)
 end
 
 function emut.RestoreMutations(ply, class_name, ent)
-	assert(IsValid(ply) and ply:IsPlayer(), "player is invalid")
-	assert(emut.registered_mutators[class_name], "invalid mutator " .. class_name)
-	assert(IsValid(ent), "entity is invalid")
+	if not IsValid( ply ) then return end
+	if not IsValid( ent ) then return end
+	if not ply:IsPlayer() then return end
+	if not emut.registered_mutators[class_name] then return end
 
 	if SERVER then
 		if not override_enabled then
