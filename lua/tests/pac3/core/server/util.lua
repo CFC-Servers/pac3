@@ -136,8 +136,9 @@ return {
         {
             name = "pac.RatelimitAlert sets up necessary tables and sends message on first call",
             func = function()
-                local messageStub = stub( pac, "Message" )
+                -- FIXME: This will work after PR #1264 is merged into pac3 develop
                 local ply = {}
+                local messageStub = stub( pac, "Message" )
 
                 pac.RatelimitAlert( ply, "TestID", "TestMessage" )
                 expect( ply.pac_ratelimit_alerts ).to.exist()
@@ -146,6 +147,42 @@ return {
 
                 expect( messageStub ).to.haveBeenCalled()
             end
-        }
+        },
+        {
+            name = "pac.RatelimitAlert does not send a message if still waiting",
+            func = function()
+                local messageStub = stub( pac, "Message" )
+                local ply = { pac_ratelimit_alerts = { TestID = math.huge } }
+
+                pac.RatelimitAlert( ply, "TestID", "TestMessage" )
+
+                expect( messageStub ).toNot.haveBeenCalled()
+            end
+        },
+        {
+            name = "pac.RatelimitAlert does not send a message if the given message is not a string or table",
+            func = function()
+                local ply = { pac_ratelimit_alerts = { TestID = 0 } }
+                local messageStub = stub( pac, "Message" )
+
+                pac.RatelimitAlert( ply, "TestID", 69420 )
+
+                expect( messageStub ).toNot.haveBeenCalled()
+            end
+        },
+        {
+            name = "pac.RatelimitAlert sends a message if the given message is a table",
+            func = function()
+                local ply = { pac_ratelimit_alerts = { TestID = 0 } }
+                local messageStub = stub( pac, "Message" ).with( function( first, second )
+                    expect( first ).to.equal( "Test" )
+                    expect( second ).to.equal( "Message" )
+                end )
+
+                pac.RatelimitAlert( ply, "TestID", { "Test", "Message" } )
+
+                expect( messageStub ).to.haveBeenCalled()
+            end
+        },
     }
 }
