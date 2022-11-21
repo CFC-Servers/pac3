@@ -184,5 +184,80 @@ return {
                 expect( messageStub ).to.haveBeenCalled()
             end
         },
+
+        -- pac.RatelimitPlayer
+        {
+            name = "pac.RatelimitPlayer sets up necessary tables and returns true on first call",
+            func = function()
+                local ply = {}
+                local messageStub = stub( pac, "Message" )
+
+                expect( pac.RatelimitPlayer( ply, "TestName", 1, 1, "TestMessage" ) ).to.beTrue()
+
+                expect( ply.pac_ratelimit_TestName ).to.exist()
+                expect( ply.pac_ratelimit_TestName ).to.equal( 0 )
+
+                expect( ply.pac_ratelimit_check_TestName ).to.exist()
+                expect( ply.pac_ratelimit_check_TestName ).to.equal( CurTime() )
+
+                expect( messageStub ).toNot.haveBeenCalled()
+            end
+        },
+        {
+            name = "pac.RatelimitPlayer returns false if no budget is available",
+            func = function()
+                local ply = {
+                    pac_ratelimit_TestName = 0,
+                    pac_ratelimit_check_TestName = CurTime(),
+                    pac_ratelimit_alerts = { TestName = 0 }
+                }
+
+                local messageStub = stub( pac, "Message" )
+
+                expect( pac.RatelimitPlayer( ply, "TestName", 1, 1, "TestMessage" ) ).to.beFalse()
+                expect( ply.pac_ratelimit_TestName ).to.equal( 0 )
+
+                expect( messageStub ).to.haveBeenCalled()
+            end
+        },
+        {
+            name = "pac.RatelimitPlayer returns false if no budget is available, and then true when the refill rate grants more budget",
+            async = true,
+            timeout = 2,
+            func = function()
+                local ply = {
+                    pac_ratelimit_TestName = 0,
+                    pac_ratelimit_check_TestName = CurTime(),
+                    pac_ratelimit_alerts = { TestName = 0 }
+                }
+
+                stub( pac, "Message" )
+
+                expect( pac.RatelimitPlayer( ply, "TestName", 1, 1, "TestMessage" ) ).to.beFalse()
+                expect( ply.pac_ratelimit_TestName ).to.equal( 0 )
+
+                timer.Simple( 1, function()
+                    expect( pac.RatelimitPlayer( ply, "TestName", 1, 1, "TestMessage" ) ).to.beTrue()
+                    expect( ply.pac_ratelimit_TestName ).to.equal( 0 )
+                    done()
+                end )
+            end
+        },
+
+        -- pac.GetRateLimitPlayerBuffer
+        {
+            name = "pac.GetRateLimitPlayerBuffer returns the correct rate limit buffer",
+            func = function()
+                local ply = { pac_ratelimit_TestName = 5 }
+                expect( pac.GetRateLimitPlayerBuffer( ply, "TestName" ) ).to.equal( 5 )
+            end
+        },
+        {
+            name = "pac.GetRateLimitPlayerBuffer returns 0 if the requested buffer does not exist",
+            func = function()
+                local ply = {}
+                expect( pac.GetRateLimitPlayerBuffer( ply, "TestName" ) ).to.equal( 0 )
+            end
+        },
     }
 }
