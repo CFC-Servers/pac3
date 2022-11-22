@@ -136,7 +136,6 @@ return {
         {
             name = "pac.RatelimitAlert sets up necessary tables and sends message on first call",
             func = function()
-                -- FIXME: This will work after PR #1264 is merged into pac3 develop
                 local ply = {}
                 local messageStub = stub( pac, "Message" )
 
