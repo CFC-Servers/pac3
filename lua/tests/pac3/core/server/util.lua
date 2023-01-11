@@ -24,8 +24,8 @@ return {
 
                 pac.dprint( "%s", "test" )
 
-                expect( msgStub ).toNot.haveBeenCalled()
-                expect( traceStub ).toNot.haveBeenCalled()
+                expect( msgStub ).wasNot.called()
+                expect( traceStub ).wasNot.called()
             end
         },
         {
@@ -39,8 +39,8 @@ return {
 
                 pac.dprint( "%s", "test" )
 
-                expect( msgStub ).to.haveBeenCalled()
-                expect( traceStub ).toNot.haveBeenCalled()
+                expect( msgStub ).wasNot.called()
+                expect( traceStub ).wasNot.called()
             end
         },
         {
@@ -54,8 +54,8 @@ return {
 
                 pac.dprint( "%s", "test" )
 
-                expect( msgStub ).to.haveBeenCalled()
-                expect( traceStub ).to.haveBeenCalled()
+                expect( msgStub ).was.called()
+                expect( traceStub ).was.called()
             end
         },
 
@@ -68,7 +68,7 @@ return {
 
                 pac.CallHook( "TestEvent", "test-arg" )
 
-                expect( func ).to.haveBeenCalled()
+                expect( func ).was.called()
             end
         },
 
@@ -87,9 +87,9 @@ return {
                 local eventFunc = hookTable.TestEvent.pac_TestID
                 expect( eventFunc ).to.beA( "function" )
                 expect( eventFunc ).to.succeed()
-                expect( cb ).to.haveBeenCalled()
+                expect( cb ).was.called()
 
-                expect( messageStub ).toNot.haveBeenCalled()
+                expect( messageStub ).wasNot.called()
             end,
 
             cleanup = function()
@@ -110,9 +110,9 @@ return {
                 local eventFunc = hookTable.TestEvent.pac_TestID
                 expect( eventFunc ).to.beA( "function" )
                 expect( eventFunc ).to.succeed()
-                expect( cb ).to.haveBeenCalled()
+                expect( cb ).was.called()
 
-                expect( messageStub ).to.haveBeenCalled()
+                expect( messageStub ).was.called()
             end,
 
             cleanup = function()
@@ -144,7 +144,7 @@ return {
                 expect( ply.pac_ratelimit_alerts.TestID ).to.exist()
                 expect( ply.pac_ratelimit_alerts.TestID ).to.beGreaterThan( CurTime() )
 
-                expect( messageStub ).to.haveBeenCalled()
+                expect( messageStub ).was.called()
             end
         },
         {
@@ -155,7 +155,7 @@ return {
 
                 pac.RatelimitAlert( ply, "TestID", "TestMessage" )
 
-                expect( messageStub ).toNot.haveBeenCalled()
+                expect( messageStub ).was.called()
             end
         },
         {
@@ -166,7 +166,7 @@ return {
 
                 pac.RatelimitAlert( ply, "TestID", 69420 )
 
-                expect( messageStub ).toNot.haveBeenCalled()
+                expect( messageStub ).wasNot.called()
             end
         },
         {
@@ -180,7 +180,7 @@ return {
 
                 pac.RatelimitAlert( ply, "TestID", { "Test", "Message" } )
 
-                expect( messageStub ).to.haveBeenCalled()
+                expect( messageStub ).was.called()
             end
         },
 
@@ -199,7 +199,7 @@ return {
                 expect( ply.pac_ratelimit_check_TestName ).to.exist()
                 expect( ply.pac_ratelimit_check_TestName ).to.equal( CurTime() )
 
-                expect( messageStub ).toNot.haveBeenCalled()
+                expect( messageStub ).wasNot.called()
             end
         },
         {
@@ -216,7 +216,7 @@ return {
                 expect( pac.RatelimitPlayer( ply, "TestName", 1, 1, "TestMessage" ) ).to.beFalse()
                 expect( ply.pac_ratelimit_TestName ).to.equal( 0 )
 
-                expect( messageStub ).to.haveBeenCalled()
+                expect( messageStub ).was.called()
             end
         },
         {

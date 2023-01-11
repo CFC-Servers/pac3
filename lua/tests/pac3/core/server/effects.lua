@@ -32,10 +32,10 @@ return {
                 local broadcastStub = stub( net, "Broadcast" )
 
                 pac.PrecacheEffect( "test_effect" )
-                expect( precacheStub ).to.haveBeenCalled()
-                expect( startStub ).to.haveBeenCalled()
-                expect( writeStringStub ).to.haveBeenCalled()
-                expect( broadcastStub ).to.haveBeenCalled()
+                expect( precacheStub ).was.called()
+                expect( startStub ).was.called()
+                expect( writeStringStub ).was.called()
+                expect( broadcastStub ).was.called()
             end
         },
 

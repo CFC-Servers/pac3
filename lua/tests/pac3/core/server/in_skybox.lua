@@ -26,7 +26,7 @@ return {
 
                 -- Wait for the the in_skybox timer to find and set the NW2Bool on our ent
                 timer.Simple( 0.5, function()
-                    expect( ent.SetNW2Bool ).to.haveBeenCalled()
+                    expect( ent.SetNW2Bool ).was.called()
 
                     -- Restore the original FindInPVS function (so our ent isn't found anymore)
                     findInPVS:Restore()
@@ -39,7 +39,7 @@ return {
 
                     -- Wait for the in_skybox timer to run one more time
                     timer.Simple( 0.5, function()
-                        expect( ent.SetNW2Bool ).to.haveBeenCalled()
+                        expect( ent.SetNW2Bool ).was.called()
                         done()
                     end )
                 end )
