@@ -39,7 +39,7 @@ return {
 
                 pac.dprint( "%s", "test" )
 
-                expect( msgStub ).wasNot.called()
+                expect( msgStub ).was.called()
                 expect( traceStub ).wasNot.called()
             end
         },
@@ -155,7 +155,7 @@ return {
 
                 pac.RatelimitAlert( ply, "TestID", "TestMessage" )
 
-                expect( messageStub ).was.called()
+                expect( messageStub ).wasNot.called()
             end
         },
         {
