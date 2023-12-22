@@ -86,9 +86,10 @@ function pac.RegisterPart(META)
 	assert(istable(META.StorableVars), "Part " .. META.ClassName .. " has no StorableVars")
 
 	do
-		local cvar = CreateClientConVar("pac_enable_" .. META.ClassName, "1", true)
+		local cvarName = "pac_enable_" .. string.Replace(META.ClassName, " ", "_"):lower()
+		local cvar = CreateClientConVar(cvarName, "1", true)
 
-		cvars.AddChangeCallback("pac_enable_" .. META.ClassName, function(name, old, new)
+		cvars.AddChangeCallback(cvarName, function(name, old, new)
 			local enable = tobool(new)
 			META.GloballyEnabled = enable
 			if enable then
