@@ -87,13 +87,19 @@ end
 function PART:SetEffect(name)
 	self.waitingForServer = true
 	self.Effect = name
-	self.Ready = alreadyServer[name] or false
+	self.Ready = true
+	PrecacheParticleSystem(name)
+	pac.dprint("effect %q precached!", name)
+	pac.CallRecursiveOnAllParts("OnEffectPrecached", name)
 
-	if not alreadyServer[name] then
-		pac_request_precache(name)
-	else
-		self.waitingForServer = false
-	end
+	-- Disabled while we investigate potential issues with this (05/21/2024)
+	-- self.Ready = alreadyServer[name] or false
+
+	-- if not alreadyServer[name] then
+	-- 	pac_request_precache(name)
+	-- else
+	-- 	self.waitingForServer = false
+	-- end
 end
 
 pac.AddHook("pac_EffectPrecached", "pac_Effects", function(name)
