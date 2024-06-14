@@ -46,7 +46,7 @@ function pac.GetWorldEntity()
 		ent:SetPos(Vector(0,0,0))
 
 		-- go away ugh
-		ent:SetModelScale(0,0)
+		ent:SetMaterial("materials/null")
 
 		ent.IsPACWorldEntity = true
 

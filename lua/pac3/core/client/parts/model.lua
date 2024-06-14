@@ -438,7 +438,7 @@ local _self, _ent, _pos, _ang
 
 local function ent_draw_model(self, ent, pos, ang)
 	if self.obj_mesh then
-		ent:SetModelScale(0,0)
+		ent:SetModelScale(0.001, 0)
 		ent:DrawModel()
 
 		matrix:Identity()
@@ -578,7 +578,7 @@ end
 
 local function RealDrawModel(self, ent, pos, ang)
 	if self.Mesh then
-		ent:SetModelScale(0,0)
+		ent:SetModelScale(0.001, 0)
 		ent:DrawModel()
 
 		local matrix = Matrix()
