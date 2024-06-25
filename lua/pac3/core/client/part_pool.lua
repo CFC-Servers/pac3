@@ -824,14 +824,15 @@ do -- drawing
 		local should_suppress = setup_suppress()
 
 		pac.AddHook("PostDrawOpaqueRenderables", "draw_opaque", function(bDrawingDepth, bDrawingSkybox, isDraw3DSkybox)
+			if bDrawingSkybox and isDraw3DSkybox then return end
 			if should_suppress() then return end
 
 			for ent in next, pac.drawn_entities do
 				if ent.pac_is_drawing and ent_parts[ent] and not ent:IsDormant() then
 
-					if isDraw3DSkybox and not ent:GetNW2Bool("pac_in_skybox") then
-						continue
-					end
+					-- if isDraw3DSkybox and not ent:GetNW2Bool("pac_in_skybox") then
+					-- 	continue
+					-- end
 
 					pac.RenderOverride(ent, "opaque")
 				end
@@ -843,14 +844,15 @@ do -- drawing
 		local should_suppress = setup_suppress()
 
 		pac.AddHook("PostDrawTranslucentRenderables", "draw_translucent", function(bDrawingDepth, bDrawingSkybox, isDraw3DSkybox)
+			if bDrawingSkybox and isDraw3DSkybox then return end
 			if should_suppress() then return end
 
 			for ent in next, pac.drawn_entities do
 				if ent.pac_is_drawing and ent_parts[ent] and not ent:IsDormant() then -- accessing table of NULL doesn't do anything
 
-					if isDraw3DSkybox and not ent:GetNW2Bool("pac_in_skybox") then
-						continue
-					end
+					-- if isDraw3DSkybox and not ent:GetNW2Bool("pac_in_skybox") then
+					-- 	continue
+					-- end
 
 					pac.RenderOverride(ent, "translucent")
 				end
