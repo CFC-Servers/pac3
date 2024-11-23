@@ -3,10 +3,22 @@ local MUTATOR = {}
 MUTATOR.ClassName = "model"
 MUTATOR.UpdateRate = 0.25
 
+local CL_MODEL_ONLY = CreateConVar('pac_cl_mdls', '0', CLIENT and {FCVAR_REPLICATED} or {FCVAR_ARCHIVE, FCVAR_REPLICATED}, 'Use CL models instead of serverside models.')
+
+local function fixLP( ent )
+	if not CL_MODEL_ONLY:GetBool() then return end
+	if not CLIENT then return end
+	if ent ~= LocalPlayer() then return end
+	local original = ent:GetPredictable()
+	ent:SetPredictable( not original )
+	ent:SetPredictable( original )
+end
+
 function MUTATOR:WriteArguments(path)
 	assert(isstring(path), "path must be a string")
 
 	net.WriteString(path)
+	net.WriteString(self.Entity:GetModel())
 end
 
 function MUTATOR:ReadArguments()
@@ -14,10 +26,12 @@ function MUTATOR:ReadArguments()
 end
 
 function MUTATOR:Update(val)
+	if CL_MODEL_ONLY:GetBool() and SERVER then return end
 	if not self.actual_model or not IsValid(self.Entity) then return end
 
 	if self.Entity:GetModel():lower() ~= self.actual_model:lower() then
 		self.Entity:SetModel(self.actual_model)
+		fixLP(self.Entity)
 	end
 end
 
@@ -25,7 +39,8 @@ function MUTATOR:StoreState()
 	return self.Entity:GetModel()
 end
 
-function MUTATOR:Mutate(path)
+function MUTATOR:Mutate(path, svmodel)
+	self.Entity.pac_sv_model = svmodel
 	if path:find("^http") then
 		if SERVER and pac.debug then
 			if self.Owner:IsPlayer() then
@@ -45,7 +60,24 @@ function MUTATOR:Mutate(path)
 				pac.Message(mdl_path, " downloaded for ", ent, ': ', path)
 			end
 
-			self.Entity:SetModel(mdl_path)
+			if CL_MODEL_ONLY:GetBool() then
+				if self.Entity:IsPlayer() then
+					if SERVER then
+						util.PrecacheModel(mdl_path)
+					end
+
+					if CLIENT then
+						self.Entity:SetModel(mdl_path)
+						fixLP(self.Entity)
+					end
+				else
+					self.Entity:SetModel(mdl_path)
+				end
+			else
+				self.Entity:SetModel(mdl_path)
+			end
+
+			self.Entity.pac_modified_model = mdl_path
 			self.actual_model = mdl_path
 
 		end, function(err)
@@ -54,6 +86,8 @@ function MUTATOR:Mutate(path)
 	else
 		if path:EndsWith(".mdl") then
 			self.Entity:SetModel(path)
+			fixLP(self.Entity)
+			self.Entity.pac_modified_model = nil
 
 			if self.Owner:IsPlayer() and path:lower() ~= self.Entity:GetModel():lower() then
 				self.Owner:ChatPrint('[PAC3] ERROR: ' .. path .. " is not a valid model on the server.")
@@ -63,9 +97,36 @@ function MUTATOR:Mutate(path)
 		else
 			local translated = player_manager.TranslatePlayerModel(path)
 			self.Entity:SetModel(translated)
+			fixLP(self.Entity)
 			self.actual_model = translated
+			self.Entity.pac_modified_model = nil
 		end
 	end
+end
+
+if CLIENT then
+	hook.Add( "NetworkEntityCreated", "Pac_ModelMutatorCL", function( rag )
+		if not CL_MODEL_ONLY:GetBool() then return end
+
+		local class = rag:GetClass()
+		if not string.find( class, "HL2MPRagdoll" ) then return end
+
+		local ply = rag:GetRagdollOwner()
+		if not ply.pac_modified_model then return end
+
+		local model = ply.pac_modified_model
+
+		rag:InvalidateBoneCache()
+		rag:SetModel( model )
+		rag:InvalidateBoneCache()
+
+		rag.RenderOverride = function( self )
+			if IsValid( self ) and self.IsNoDraw and self:IsNoDraw() then return end
+			rag:SetModel( model )
+			rag:InvalidateBoneCache()
+			rag:DrawModel()
+		end
+	end )
 end
 
 pac.emut.Register(MUTATOR)

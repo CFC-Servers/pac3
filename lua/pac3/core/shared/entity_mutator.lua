@@ -336,6 +336,8 @@ end)
 
 if CLIENT then
 	net.Receive("pac_entity_mutator", function(len)
+		if not pac.IsEnabled() then return end
+
 		local ply = net.ReadEntity()
 		if not ply:IsValid() then return end
 		local class_name = net.ReadString()
