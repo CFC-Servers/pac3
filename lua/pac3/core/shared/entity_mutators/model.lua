@@ -158,6 +158,18 @@ if CLIENT then
 		end
 	end
 	hook.Add("Think", "Pacific_ModelMutator", retryModelFix)
+
+	hook.Add( "NotifyShouldTransmit", "PAC_ModelMutator", function( ent, shouldtransmit )
+		if not shouldtransmit then return end
+		if not CL_MODEL_ONLY:GetBool() then return end
+		if not IsValid( ent ) then return end
+		if not ent:IsPlayer() then return end
+
+		if ent.pac_modified_model then
+			ent:SetModel( ent.pac_modified_model )
+			forceModel(ent)
+		end
+	end )
 end
 
 pac.emut.Register(MUTATOR)
