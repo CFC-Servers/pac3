@@ -22,7 +22,7 @@ function MUTATOR:WriteArguments(path)
 end
 
 function MUTATOR:ReadArguments()
-	return net.ReadString()
+	return net.ReadString(), net.ReadString()
 end
 
 function MUTATOR:Update(val)
@@ -105,6 +105,27 @@ function MUTATOR:Mutate(path, svmodel)
 end
 
 if CLIENT then
+	local function forceModel( rag )
+		local mdl = rag:GetModel()
+		if not mdl then return end
+		rag:InvalidateBoneCache()
+		rag:SetModel( mdl )
+		rag:InvalidateBoneCache()
+	end
+
+	local ragModels = {}
+	local function renderRagdoll(rag)
+		if rag.pac_modified_model then
+			rag:SetModel(rag.pac_modified_model)
+
+			if ragModels[rag] then
+				rag:InvalidateBoneCache()
+			end
+		end
+
+		rag:DrawModel()
+	end
+
 	hook.Add( "NetworkEntityCreated", "Pac_ModelMutatorCL", function( rag )
 		if not CL_MODEL_ONLY:GetBool() then return end
 
@@ -112,21 +133,31 @@ if CLIENT then
 		if not string.find( class, "HL2MPRagdoll" ) then return end
 
 		local ply = rag:GetRagdollOwner()
+		if not IsValid( ply ) or not ply:IsPlayer() then return end
 		if not ply.pac_modified_model then return end
 
 		local model = ply.pac_modified_model
+		if not model then return end
 
-		rag:InvalidateBoneCache()
-		rag:SetModel( model )
-		rag:InvalidateBoneCache()
+		rag.pac_modified_model = model
+		forceModel( rag )
+		ragModels[rag] = 50
 
-		rag.RenderOverride = function( self )
-			if IsValid( self ) and self.IsNoDraw and self:IsNoDraw() then return end
-			rag:SetModel( model )
-			rag:InvalidateBoneCache()
-			rag:DrawModel()
-		end
+		rag.RenderOverride = renderRagdoll
 	end )
+
+	local function retryModelFix()
+		for rag, retry in pairs(ragModels) do
+			if rag:IsValid() and retry > 0 then
+				ragModels[rag] = retry - 1
+
+				forceModel(rag)
+			elseif ragModels[rag] then
+				ragModels[rag] = nil
+			end
+		end
+	end
+	hook.Add("Think", "Pacific_ModelMutator", retryModelFix)
 end
 
 pac.emut.Register(MUTATOR)
