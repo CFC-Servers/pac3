@@ -105,20 +105,22 @@ function MUTATOR:Mutate(path, svmodel)
 end
 
 if CLIENT then
-	local function forceModel( rag )
-		local mdl = rag:GetModel()
-		if not mdl then return end
-		rag:InvalidateBoneCache()
-		rag:SetModel( mdl )
-		rag:InvalidateBoneCache()
+	local forceRetries = {}
+	local function forceModel( ent, mdl )
+		if not mdl then
+			mdl = ent:GetModel()
+		end
+
+		ent:InvalidateBoneCache()
+		ent:SetModel( mdl )
+		ent:InvalidateBoneCache()
 	end
 
-	local ragModels = {}
 	local function renderRagdoll(rag)
 		if rag.pac_modified_model then
 			rag:SetModel(rag.pac_modified_model)
 
-			if ragModels[rag] then
+			if forceRetries[rag] then
 				rag:InvalidateBoneCache()
 			end
 		end
@@ -134,40 +136,57 @@ if CLIENT then
 
 		local ply = rag:GetRagdollOwner()
 		if not IsValid( ply ) or not ply:IsPlayer() then return end
-		if not ply.pac_modified_model then return end
 
 		local model = ply.pac_modified_model
 		if not model then return end
 
 		rag.pac_modified_model = model
-		forceModel( rag )
-		ragModels[rag] = 50
+		forceModel( rag, model )
+		forceRetries[rag] = 50
 
 		rag.RenderOverride = renderRagdoll
 	end )
 
 	local function retryModelFix()
-		for rag, retry in pairs(ragModels) do
+		for rag, retry in pairs(forceRetries) do
 			if rag:IsValid() and retry > 0 then
-				ragModels[rag] = retry - 1
+				forceRetries[rag] = retry - 1
 
 				forceModel(rag)
-			elseif ragModels[rag] then
-				ragModels[rag] = nil
+			elseif forceRetries[rag] then
+				forceRetries[rag] = nil
 			end
 		end
 	end
 	hook.Add("Think", "Pacific_ModelMutator", retryModelFix)
 
-	hook.Add( "NotifyShouldTransmit", "PAC_ModelMutator", function( ent, shouldtransmit )
+	hook.Add( "NotifyShouldTransmit", "PAC_ModelMutator", function( ply, shouldtransmit )
 		if not shouldtransmit then return end
 		if not CL_MODEL_ONLY:GetBool() then return end
-		if not IsValid( ent ) then return end
-		if not ent:IsPlayer() then return end
+		if not IsValid( ply ) then return end
+		if not ply:IsPlayer() then return end
 
-		if ent.pac_modified_model then
-			ent:SetModel( ent.pac_modified_model )
-			forceModel(ent)
+		local mdl = ply.pac_modified_model
+		if not mdl then return end
+
+		if not shouldtransmit then
+			if ply ~= LocalPlayer() then
+				timer.Remove("pac_fixdormancy_" .. ply:SteamID())
+			end
+
+			return
+		end
+
+		if ply == LocalPlayer() then
+			forceModel(ply, mdl)
+			forceRetries[ply] = 20
+		else
+			timer.Create("pac_fixdormancy_" .. ply:SteamID(), 0.2, 1, function()
+				if not IsValid(ply) then return end
+
+				forceModel(ply, mdl)
+				forceRetries[ply] = 50
+			end)
 		end
 	end )
 end
