@@ -712,8 +712,6 @@ do -- drawing
 
 				if ent:IsDormant() then goto CONTINUE end
 
-				pac.ResetRenderTime(ent)
-
 				dst = ent:EyePos():Distance(pac.EyePos)
 				radius = ent:BoundingRadius() * 3 * (ent:GetModelScale() or 1)
 

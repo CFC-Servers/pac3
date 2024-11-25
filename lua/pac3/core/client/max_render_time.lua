@@ -1,5 +1,4 @@
 local SysTime = SysTime
-local pairs = pairs
 local Color = Color
 local tostring = tostring
 local cam_Start2D = cam.Start2D
@@ -19,41 +18,58 @@ local input_LookupBinding = input.LookupBinding
 local LocalPlayer = LocalPlayer
 local input_IsMouseDown = input.IsMouseDown
 local cam_End2D = cam.End2D
+local FrameNumber = FrameNumber
+local table_insert = table.insert
+local table_remove = table.remove
 
-local max_render_time_cvar = CreateClientConVar("pac_max_render_time", 0)
+local pac_max_render_time = CreateClientConVar("pac_max_render_time", 0)
 
 function pac.IsRenderTimeExceeded(ent)
 	return ent.pac_render_time_exceeded
 end
 
-function pac.ResetRenderTime(ent)
-	ent.pac_rendertime = ent.pac_rendertime or {}
-
-	for key in pairs(ent.pac_rendertime) do
-		ent.pac_rendertime[key] = 0
-	end
-end
-
 function pac.RecordRenderTime(ent, type, start)
-	ent.pac_rendertime = ent.pac_rendertime or {}
-	ent.pac_rendertime[type] = (ent.pac_rendertime[type] or 0) + (SysTime() - start)
+	local took = SysTime() - start
 
-	local max_render_time = max_render_time_cvar:GetFloat()
+	local max_render_time = pac_max_render_time:GetFloat()
+	if max_render_time <= 0 then return end
 
-	if max_render_time > 0 then
-		local total_time = 0
+	local entTbl = ent:GetTable()
+	if not entTbl.pac_rendertimes then
+		entTbl.pac_rendertimes = {}
+		entTbl.pac_lastframe = 0
+	end
 
-		for k,v in pairs(ent.pac_rendertime) do
-			total_time = total_time + v
+	if entTbl.pac_lastframe ~= FrameNumber() then
+		table_insert(entTbl.pac_rendertimes, 1, took)
+		entTbl.pac_lastframe = FrameNumber()
+	else
+		entTbl.pac_rendertimes[1] = entTbl.pac_rendertimes[1] + took
+	end
+
+	if #entTbl.pac_rendertimes > 10 then
+		table_remove(entTbl.pac_rendertimes)
+	end
+
+	local avg = 0
+	local timesCount = #entTbl.pac_rendertimes
+	for i = 1, timesCount do
+		avg = avg + entTbl.pac_rendertimes[i]
+	end
+	avg = avg / timesCount
+
+	local exceededSingleFrame = took * 1000 > max_render_time * 5
+	local exceededAvg = avg * 1000 > max_render_time
+	if exceededAvg or exceededSingleFrame then
+		pac.Message(Color(255, 50, 50), tostring(ent) .. ": max render time exceeded (" .. type .. " took " .. took * 1000 .. "ms, avg " .. avg * 1000 .. "ms, max " .. max_render_time .. "ms)")
+		if exceededSingleFrame then
+			ent.pac_render_time_exceeded = took * 1000
 		end
 
-		total_time = total_time * 1000
-
-		if total_time > max_render_time then
-			pac.Message(Color(255, 50, 50), tostring(ent) .. ": max render time exceeded!")
-			ent.pac_render_time_exceeded = total_time
-			pac.HideEntityParts(ent)
+		if exceededAvg then
+			ent.pac_render_time_exceeded = avg * 1000
 		end
+		pac.HideEntityParts(ent)
 	end
 end
 
@@ -71,7 +87,7 @@ function pac.DrawRenderTimeExceeded(ent)
 				string_format(
 					"pac3 outfit took %.2f/%i ms to render",
 					ent.pac_render_time_exceeded,
-					max_render_time_cvar:GetFloat()
+					pac_max_render_time:GetFloat()
 				),
 				"ChatFont",
 				pos_2d.x,
