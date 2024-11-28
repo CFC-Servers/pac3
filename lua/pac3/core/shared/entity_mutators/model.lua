@@ -22,7 +22,9 @@ function MUTATOR:WriteArguments(path)
 end
 
 function MUTATOR:ReadArguments()
-	return net.ReadString(), net.ReadString()
+	local path = net.ReadString()
+	local svmodel = net.ReadString()
+	return path, svmodel
 end
 
 function MUTATOR:Update(val)
@@ -41,6 +43,8 @@ end
 
 function MUTATOR:Mutate(path, svmodel)
 	self.Entity.pac_sv_model = svmodel
+	path = path or ""
+
 	if path:find("^http") then
 		if SERVER and pac.debug then
 			if self.Owner:IsPlayer() then
