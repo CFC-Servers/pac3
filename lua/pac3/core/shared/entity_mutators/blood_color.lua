@@ -4,11 +4,11 @@ MUTATOR.ClassName = "blood_color"
 
 function MUTATOR:WriteArguments(enum)
 	assert(enum >= -1 and enum <= 6, "invalid blood color")
-	net.WriteInt(enum, 8)
+	net.WriteUInt(enum, 3)
 end
 
 function MUTATOR:ReadArguments()
-	return net.ReadInt(8)
+	return net.ReadUInt(3)
 end
 
 if SERVER then
