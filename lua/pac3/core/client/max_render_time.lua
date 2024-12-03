@@ -58,14 +58,9 @@ function pac.RecordRenderTime(ent, type, start)
 	end
 	avg = avg / timesCount
 
-	local exceededSingleFrame = took * 1000 > max_render_time * 5
 	local exceededAvg = avg * 1000 > max_render_time
-	if exceededAvg or exceededSingleFrame then
+	if exceededAvg then
 		pac.Message(Color(255, 50, 50), tostring(ent) .. ": max render time exceeded (" .. type .. " took " .. took * 1000 .. "ms, avg " .. avg * 1000 .. "ms, max " .. max_render_time .. "ms)")
-		if exceededSingleFrame then
-			ent.pac_render_time_exceeded = took * 1000
-		end
-
 		if exceededAvg then
 			ent.pac_render_time_exceeded = avg * 1000
 		end
