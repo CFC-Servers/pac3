@@ -131,11 +131,17 @@ do
 				pac.DrawRenderTimeExceeded(ent)
 			end
 
-			if ent:IsPlayer() then
+			if ent:IsPlayer() and ent.RenderOverride then
+				ent._pac_render_override = ent.RenderOverride
 				ent.RenderOverride = nil
 			end
 
 			return
+		end
+
+		if ent._pac_render_override then
+			ent.RenderOverride = ent._pac_render_override
+			ent._pac_render_override = nil
 		end
 
 		local start = SysTime()
