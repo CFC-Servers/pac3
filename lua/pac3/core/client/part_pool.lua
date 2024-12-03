@@ -130,6 +130,11 @@ do
 			if type == "opaque" then
 				pac.DrawRenderTimeExceeded(ent)
 			end
+
+			if ent:IsPlayer() then
+				ent.RenderOverride = nil
+			end
+
 			return
 		end
 
