@@ -3,12 +3,17 @@ local MUTATOR = {}
 MUTATOR.ClassName = "blood_color"
 
 function MUTATOR:WriteArguments(enum)
-	assert(enum >= -1 and enum <= 6, "invalid blood color")
+	if -1 > enum and enum > 6 then
+		enum = 0
+	end
+
+	enum = enum + 1 -- Transfers -1
 	net.WriteUInt(enum, 3)
 end
 
 function MUTATOR:ReadArguments()
-	return net.ReadUInt(3)
+	local int = net.ReadUInt(3)
+	return int - 1
 end
 
 if SERVER then
