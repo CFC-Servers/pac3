@@ -114,28 +114,29 @@ end
 
 local frictionConvar = GetConVar("sv_friction")
 pac.AddHook("Move", "custom_movement", function(ply, mv)
-	local self = ply.pac_movement
+	local plyTbl = ply:GetTable()
+	local plyPacMove = plyTbl.pac_movement
 
-	if not self then
-		if not ply.pac_custom_movement_reset then
+	if not plyPacMove then
+		if not plyTbl.pac_custom_movement_reset then
 			if not badMovetype(ply) then
 				ply:SetGravity(1)
 				ply:SetMoveType(MOVETYPE_WALK)
 
-				if ply.pac_custom_movement_jump_height then
-					ply:SetJumpPower(ply.pac_custom_movement_jump_height)
-					ply.pac_custom_movement_jump_height = nil
+				if plyTbl.pac_custom_movement_jump_height then
+					ply:SetJumpPower(plyTbl.pac_custom_movement_jump_height)
+					plyTbl.pac_custom_movement_jump_height = nil
 				end
 			end
 
-			ply.pac_custom_movement_reset = true
+			plyTbl.pac_custom_movement_reset = true
 		end
 
 		return
 	end
 
-	ply.pac_custom_movement_reset = nil
-	ply.pac_custom_movement_jump_height = ply.pac_custom_movement_jump_height or ply:GetJumpPower()
+	plyTbl.pac_custom_movement_reset = nil
+	plyTbl.pac_custom_movement_jump_height = plyTbl.pac_custom_movement_jump_height or ply:GetJumpPower()
 
 	if badMovetype(ply) then return end
 
@@ -143,9 +144,9 @@ pac.AddHook("Move", "custom_movement", function(ply, mv)
 	mv:SetSideSpeed(0)
 	mv:SetUpSpeed(0)
 
-	ply:SetJumpPower(self.JumpHeight)
+	ply:SetJumpPower(plyPacMove.JumpHeight)
 
-	if self.Noclip then
+	if plyPacMove.Noclip then
 		ply:SetMoveType(MOVETYPE_NONE)
 	else
 		ply:SetMoveType(MOVETYPE_WALK)
@@ -155,22 +156,22 @@ pac.AddHook("Move", "custom_movement", function(ply, mv)
 
 	local on_ground = ply:IsOnGround()
 
-	if not self.StickToGround then
+	if not plyPacMove.StickToGround then
 		ply:SetGroundEntity(NULL)
 	end
 
-	local speed = self.RunSpeed
+	local speed = plyPacMove.RunSpeed
 
 	if mv:KeyDown(IN_SPEED) then
-		speed = self.SprintSpeed
+		speed = plyPacMove.SprintSpeed
 	end
 
 	if mv:KeyDown(IN_WALK) then
-		speed = self.WalkSpeed
+		speed = plyPacMove.WalkSpeed
 	end
 
 	if mv:KeyDown(IN_DUCK) then
-		speed = self.DuckSpeed
+		speed = plyPacMove.DuckSpeed
 	end
 
 --	speed = speed * FrameTime()
@@ -178,7 +179,7 @@ pac.AddHook("Move", "custom_movement", function(ply, mv)
 	local ang = mv:GetAngles()
 	local vel = Vector()
 
-	if on_ground and self.StickToGround then
+	if on_ground and plyPacMove.StickToGround then
 		ang.p = 0
 	end
 
@@ -196,7 +197,7 @@ pac.AddHook("Move", "custom_movement", function(ply, mv)
 
 	vel = vel:GetNormalized() * speed
 
-	if self.AllowZVelocity then
+	if plyPacMove.AllowZVelocity then
 		if mv:KeyDown(IN_JUMP) then
 			vel = vel + ang:Up() * speed
 		elseif mv:KeyDown(IN_DUCK) then
@@ -204,7 +205,7 @@ pac.AddHook("Move", "custom_movement", function(ply, mv)
 		end
 	end
 
-	if not self.AllowZVelocity then
+	if not plyPacMove.AllowZVelocity then
 		vel.z = 0
 	end
 
@@ -212,7 +213,7 @@ pac.AddHook("Move", "custom_movement", function(ply, mv)
 
 	local vel = mv:GetVelocity()
 
-	if on_ground and not self.Noclip and self.StickToGround then -- work against ground friction
+	if on_ground and not plyPacMove.Noclip and plyPacMove.StickToGround then -- work against ground friction
 		local sv_friction = frictionConvar:GetInt()
 
 		if sv_friction > 0 then
@@ -221,31 +222,31 @@ pac.AddHook("Move", "custom_movement", function(ply, mv)
 		end
 	end
 
-	vel = vel + self.Gravity * 0
+	vel = vel + plyPacMove.Gravity * 0
 
 	-- todo: don't allow adding more velocity to existing velocity if it exceeds
 	-- but allow decreasing
 	if not on_ground then
-		local friction = self.AirFriction
+		local friction = plyPacMove.AirFriction
 		friction = -(friction) + 1
 
 		vel = vel * friction
 
-		vel = vel + self.Gravity * 0.015
-		speed = speed:GetNormalized() * math.Clamp(speed:Length(), 0, self.MaxAirSpeed)
+		vel = vel + plyPacMove.Gravity * 0.015
+		speed = speed:GetNormalized() * math.Clamp(speed:Length(), 0, plyPacMove.MaxAirSpeed)
 		vel = vel + (speed * FrameTime()*(66.666*(-friction+1)))
 	else
-		local friction = self.GroundFriction
+		local friction = plyPacMove.GroundFriction
 		friction = -(friction) + 1
 
 		vel = vel * friction
 
-		speed = speed:GetNormalized() * math.min(speed:Length(), self.MaxGroundSpeed)
+		speed = speed:GetNormalized() * math.min(speed:Length(), plyPacMove.MaxGroundSpeed)
 		vel = vel + (speed * FrameTime()*(75.77*(-friction+1)))
-		vel = vel + self.Gravity * 0.015
+		vel = vel + plyPacMove.Gravity * 0.015
 	end
 
-	if self.FinEfficiency > 0 then -- fin
+	if plyPacMove.FinEfficiency > 0 then -- fin
 		local curvel = vel
 		local curup = ang:Forward()
 
@@ -258,7 +259,7 @@ pac.AddHook("Move", "custom_movement", function(ply, mv)
 		local modf = math.abs(curup:Dot(curvel:GetNormalized()))
 		local nvec = (curup:Dot(curvel:GetNormalized()))
 
-		if (self.pln == 1) then
+		if (plyPacMove.pln == 1) then
 
 			if nvec > 0 then
 				vec1 = vec1 + (curup * 10)
@@ -268,23 +269,23 @@ pac.AddHook("Move", "custom_movement", function(ply, mv)
 
 			finalvec = vec1:GetNormalized() * (math.pow(sped, modf) - 1)
 			finalvec = finalvec:GetNormalized()
-			finalvec = (finalvec * self.FinEfficiency) + curvel
+			finalvec = (finalvec * plyPacMove.FinEfficiency) + curvel
 		end
 
-		if (self.FinLiftMode ~= "none") then
-			if (self.FinLiftMode == "normal") then
+		if (plyPacMove.FinLiftMode ~= "none") then
+			if (plyPacMove.FinLiftMode == "normal") then
 				local liftmul = 1 - math.abs(nvec)
-				finalvec = finalvec + (curup * liftmul * curvel:Length() * self.FinEfficiency) / 700
+				finalvec = finalvec + (curup * liftmul * curvel:Length() * plyPacMove.FinEfficiency) / 700
 			else
 				local liftmul = (nvec / math.abs(nvec)) - nvec
-				finalvec = finalvec + (curup * curvel:Length() * self.FinEfficiency * liftmul) / 700
+				finalvec = finalvec + (curup * curvel:Length() * plyPacMove.FinEfficiency * liftmul) / 700
 			end
 		end
 
 		finalvec = finalvec:GetNormalized()
 		finalvec = finalvec * curvel:Length()
 
-		if self.FinCline then
+		if plyPacMove.FinCline then
 			local trace = {
 				start = mv:GetOrigin(),
 				endpos = mv:GetOrigin() + Vector(0, 0, -1000000),
@@ -297,7 +298,7 @@ pac.AddHook("Move", "custom_movement", function(ply, mv)
 			if (MatType == 67 or MatType == 77) then
 				local heatvec = Vector(0, 0, 100)
 				local cline = ((2 * (heatvec:Dot(curup)) * curup - heatvec)) * (math.abs(heatvec:Dot(curup)) / 1000)
-				finalvec = finalvec + (cline * (self.FinEfficiency / 50))
+				finalvec = finalvec + (cline * (plyPacMove.FinEfficiency / 50))
 			end
 		end
 
@@ -306,7 +307,7 @@ pac.AddHook("Move", "custom_movement", function(ply, mv)
 
 	mv:SetVelocity(vel)
 
-	if self.Noclip then
+	if plyPacMove.Noclip then
 		mv:SetOrigin(mv:GetOrigin() + vel * 0.01)
 	end
 
