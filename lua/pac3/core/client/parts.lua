@@ -127,8 +127,6 @@ function pac.RegisterPart(META)
 end
 
 function pac.LoadParts()
-	print("loading all parts")
-
 	include("base_part.lua")
 	include("base_movable.lua")
 	include("base_drawable.lua")
