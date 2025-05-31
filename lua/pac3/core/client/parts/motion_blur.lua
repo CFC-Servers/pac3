@@ -64,7 +64,8 @@ function PART:DrawBlur(pos, ang)
 			ent:SetCycle(cycle)
 
 			for _, data in ipairs(bones) do
-				pcall(ent.SetBoneMatrix, ent, data.id, data.matrix)
+				if ent:GetBoneName(data.id) == "__INVALIDBONE__" then continue end
+				ent:SetBoneMatrix(data.id, data.matrix)
 			end
 		end
 
