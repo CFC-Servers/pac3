@@ -100,7 +100,7 @@ function pac.DrawRenderTimeExceeded(ent)
 			local dist = 200
 			local hovering = mx > x - dist and mx < x + dist and my > y - dist and my < y + dist
 
-			local button = vgui_CursorVisible() and "click" or ("press " .. input_LookupBinding("+use"))
+			local button = vgui_CursorVisible() and "click" or ("press " .. (input_LookupBinding("+use") or "USE"))
 			draw_DrawText(button .. " here to try again", "ChatFont", x, y, Color(255,255,255,alpha * (hovering and 255 or 100) ), 1)
 
 			if hovering and LocalPlayer():KeyDown(IN_USE) or (vgui_CursorVisible() and input_IsMouseDown(MOUSE_LEFT)) then
