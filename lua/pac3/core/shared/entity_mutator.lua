@@ -62,7 +62,7 @@ local override_enabled = false
 function emut.MutateEntity(owner, class_name, ent, ...)
 	if not IsValid(owner) then owner = game.GetWorld() end
 	assert(emut.registered_mutators[class_name], "invalid mutator " .. class_name)
-	if not IsValid(ent) then ErrorNoHalt("entity is invalid") return end
+	if not IsValid(ent) then return end
 
 	if hook.Run("PACMutateEntity", owner, ent, class_name, ...) == false then
 		return
