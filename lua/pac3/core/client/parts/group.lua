@@ -47,7 +47,7 @@ function PART:SetOwner(ent)
 		owner = self:GetOwner()
 
 		if owner:IsValid() then
-			if not pac.HookEntityRender(owner, self) then
+			if not pac.HookEntityRendering(owner, self) then
 				self:ShowFromRendering()
 			end
 		end

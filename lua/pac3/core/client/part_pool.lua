@@ -215,7 +215,7 @@ function pac.EnableDrawnEntities(bool)
 	end
 end
 
-function pac.HookEntityRender(ent, part)
+function pac.HookEntityRendering(ent, part)
 	local parts = ent_parts[ent]
 
 	if not parts then
@@ -852,7 +852,7 @@ do -- drawing
 	do
 		local should_suppress = setup_suppress()
 
-		pac.AddHook("PostDrawTranslucentRenderables", "draw_translucent", function(bDrawingDepth, bDrawingSkybox, isDraw3DSkybox)
+		pac.AddHook("PostDrawTranslucentRenderables", "draw_translucents", function(bDrawingDepth, bDrawingSkybox, isDraw3DSkybox)
 			if bDrawingSkybox and isDraw3DSkybox then return end
 			if should_suppress() then return end
 
