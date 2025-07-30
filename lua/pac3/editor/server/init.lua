@@ -91,5 +91,3 @@ end
 
 
 CreateConVar("has_pac3_editor", "1", {FCVAR_NOTIFY})
-
-resource.AddSingleFile("materials/icon64/pac3.png")
