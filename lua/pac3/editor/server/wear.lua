@@ -366,12 +366,12 @@ function pace.HandleReceivedData(ply, data)
 	if istable(data.part) and data.part.self then
 		if istable(data.part.self) and not data.part.self.UniqueID then return end -- bogus data
 
-		pac.Message("Received pac group ", data.partID or 0 , "/", data.totalParts or 0, " from ", ply)
+		--pac.Message("Received pac group ", data.partID or 0 , "/", data.totalParts or 0, " from ", ply)
 		pace.SubmitPartNotify(data)
 	elseif isstring(data.part) then
 		local clearing = data.part == "__ALL__"
 
-		pac.Message("Clearing ", clearing and "Oufit" or "Part" , " from ", ply)
+		--pac.Message("Clearing ", clearing and "Oufit" or "Part" , " from ", ply)
 		pace.RemovePart(data)
 	end
 end
