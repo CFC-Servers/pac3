@@ -332,7 +332,8 @@ function pace.FillWearSettings(pnl)
 				mode.form = player_list_form(L"whitelist", "wear_whitelist", L"Only the players in the whitelist can see your worn outfit.")
 			elseif value == "blacklist" then
 				mode.form = player_list_form( L"blacklist", "wear_blacklist", L"The players in the blacklist cannot see your worn outfit.")
-			elseif value == "disabled" then
+			else
+				value = "disabled"
 				mode.form = generic_form(L"Everyone can see your worn outfit.")
 			end
 
@@ -372,7 +373,8 @@ function pace.FillWearSettings(pnl)
 				mode.form = player_list_form(L"whitelist", "outfit_whitelist", L"You will only see outfits from the players in the whitelist.")
 			elseif value == "blacklist" then
 				mode.form = player_list_form(L"blacklist", "outfit_blacklist", L"You will see outfits from everyone except the players in the blacklist.")
-			elseif value == "disabled" then
+			else
+				value = "disabled"
 				mode.form = generic_form(L"You will see everyone's outfits.")
 			end
 
