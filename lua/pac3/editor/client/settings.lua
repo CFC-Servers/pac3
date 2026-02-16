@@ -31,4 +31,4 @@ end
 
 concommand.Add("pace_settings", function()
 	pace.OpenSettings()
-end)
+end, nil, "Open pac3 settings menu (wear whitelist/blacklist)")
