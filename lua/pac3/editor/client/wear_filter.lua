@@ -326,17 +326,19 @@ function pace.FillWearSettings(pnl)
 				mode.form:Remove()
 			end
 
+			-- create form based on selection
 			if value == "steam friends" then
 				mode.form = generic_form(L"Only your steam friends can see your worn outfit.")
 			elseif value == "whitelist" then
 				mode.form = player_list_form(L"whitelist", "wear_whitelist", L"Only the players in the whitelist can see your worn outfit.")
 			elseif value == "blacklist" then
 				mode.form = player_list_form( L"blacklist", "wear_blacklist", L"The players in the blacklist cannot see your worn outfit.")
-			else
+			else -- make sure we stay as one of these options
 				value = "disabled"
 				mode.form = generic_form(L"Everyone can see your worn outfit.")
 			end
 
+			-- and set cvar to update filter
 			GetConVar("pace_wear_filter_mode"):SetString(value:gsub(" ", "_"))
 
 			mode.form:SetParent(list)
@@ -367,17 +369,19 @@ function pace.FillWearSettings(pnl)
 				mode.form:Remove()
 			end
 
+			-- create form based on selection
 			if value == "steam friends" then
 				mode.form = generic_form(L"You will only see outfits from your steam friends.")
 			elseif value == "whitelist" then
 				mode.form = player_list_form(L"whitelist", "outfit_whitelist", L"You will only see outfits from the players in the whitelist.")
 			elseif value == "blacklist" then
 				mode.form = player_list_form(L"blacklist", "outfit_blacklist", L"You will see outfits from everyone except the players in the blacklist.")
-			else
+			else -- make sure we stay as one of these options
 				value = "disabled"
 				mode.form = generic_form(L"You will see everyone's outfits.")
 			end
 
+			-- and set cvar to update filter
 			GetConVar("pace_outfit_filter_mode"):SetString(value:gsub(" ", "_"))
 
 			mode.form:SetParent(list)
