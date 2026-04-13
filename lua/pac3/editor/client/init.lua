@@ -379,7 +379,7 @@ do
 	do
 		local lastViewPos, lastViewAngle, lastTargetPos
 
-		timer.Create("pac_in_editor", 0.25, 0, function()
+		timer.Create("pac_in_editor", 0.5, 0, function()
 			if not pace.Active then return end
 			if not pace.current_part:IsValid() then return end
 			local pos, ang = pace.GetViewPos(), pace.GetViewAngles()
