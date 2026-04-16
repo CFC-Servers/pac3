@@ -489,9 +489,19 @@ PART.OldEvents = {
 	},
 
 	ranger = {
-		arguments = {{distance = "number"}, {compare = "number"}, {npcs_and_players_only = "boolean"}},
-		userdata = {{editor_panel = "ranger", ranger_property = "distance"}, {editor_panel = "ranger", ranger_property = "compare"}},
-		callback = function(self, ent, distance, compare, npcs_and_players_only)
+		operator_type = "number", preferred_operator = "below",
+		arguments = {{distance = "number"}, {compare = "number"}, {npcs_and_players_only = "boolean"}, {ignore_you = "boolean"}, {ignore_viewer = "boolean"}, {ignore_players = "boolean"}, {ignore_npcs = "boolean"}},
+		userdata = {
+			{default = 15, editor_panel = "ranger", ranger_property = "distance"},
+			{default = 5, editor_panel = "ranger", ranger_property = "compare"},
+			{default = false},
+			{default = false},
+			{default = false},
+			{default = false},
+			{default = false},
+		},
+		callback = function(self, ent, distance, compare, npcs_and_players_only, ignore_you, ignore_viewer, ignore_players, ignore_npcs)
+
 			local parent = self:GetParentEx()
 
 			if parent:IsValid() and parent.GetWorldPosition then
@@ -499,13 +509,46 @@ PART.OldEvents = {
 				distance = distance or 1
 				compare = compare or 0
 
+				local filter = ent
+
+				if ignore_npcs then
+					local ownerPly = self:GetPlayerOwner() -- Has to traverse root, slow.
+					local localPly = LocalPlayer()
+
+					-- NPCs need a function filter since there isn't a clean and *performant* way to get all of them into a table.
+					filter = function(e)
+						if e == ent then return false end
+						if e:IsNPC() or e:IsNextBot() then return false end
+						if ignore_you and e == ownerPly then return false end
+						if ignore_viewer and e == localPly then return false end
+						if ignore_players and e:IsPlayer() then return false end
+
+						return true
+					end
+				elseif ignore_you or ignore_viewer or ignore_players then
+					-- Make a table for other ignores, more performant than a function.
+					filter = {ent}
+
+					if ignore_players then
+						table.Add(filter, player.GetAll())
+					else -- Other options are redundant if ignoring players.
+						if ignore_you then
+							table.insert(filter, self:GetPlayerOwner())
+						end
+
+						if ignore_viewer then
+							table.insert(filter, LocalPlayer())
+						end
+					end
+				end
+
 				local res = util.TraceLine({
 					start = parent:GetWorldPosition(),
 					endpos = parent:GetWorldPosition() + parent:GetWorldAngles():Forward() * distance,
-					filter = ent,
+					filter = filter,
 				})
 
-				if npcs_and_players_only and (not res.Entity:IsPlayer() and not res.Entity:IsNPC()) then
+				if npcs_and_players_only and (not res.Entity:IsPlayer() and not res.Entity:IsNPC() and not res.Entity:IsNextBot()) then
 					return false
 				end
 
@@ -516,6 +559,10 @@ PART.OldEvents = {
 				self:SetWarning(("ranger doesn't work on [%s] %s"):format(classname, classname ~= name and "(" .. name .. ")" or ""))
 			end
 		end,
+		nice = function(self, ent, distance, compare, npcs_and_players_only)
+			local str = "ranger: [" .. self.Operator .. " " .. compare .. "]"
+			return str
+		end
 	},
 
 	is_on_ground = {
@@ -1678,6 +1725,41 @@ end
 
 PART.last_event_triggered = false
 
+function PART:fix_args()
+	local eventData = self.Events[self.Event]
+	if not eventData then return end
+
+	local argInfos = eventData.__registeredArguments
+	if not argInfos then return end
+
+	local args = string.Split(self.Arguments, "@@")
+
+	for i, argInfo in ipairs(argInfos) do
+		local typ = argInfo[2]
+		local arg = args[i]
+
+		-- If missing or invalid, replace
+		if not arg or arg == "" or (typ ~= "string" and not tonumber(arg)) then
+			local userdata = argInfo[3] and argInfo[3][i]
+			local default = userdata and userdata.default
+			local newArg = "0"
+
+			-- Apply default if applicable
+			if default ~= nil then
+				if typ == "boolean" then
+					newArg = default and "1" or "0"
+				else
+					newArg = tostring(default)
+				end
+			end
+
+			args[i] = newArg
+		end
+	end
+
+	self.Arguments = table.concat(args, "@@")
+end
+
 function PART:OnThink()
 	local ent = get_owner(self)
 	if not ent:IsValid() then return end
@@ -1749,6 +1831,7 @@ function PART:ParseArguments(...)
 	end
 
 	self.Arguments = str
+	self:fix_args()
 end
 
 function PART:GetParsedArguments(eventObject)
