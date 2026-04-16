@@ -604,6 +604,48 @@ do -- sound
 	pace.RegisterPanel(PANEL)
 end
 
+do --generic multiline text
+	local PANEL = {}
+
+	PANEL.ClassName = "properties_generic_multiline"
+	PANEL.Base = "pace_properties_base_type"
+
+	function PANEL:MoreOptionsLeftClick()
+		local pnl = vgui.Create("DFrame")
+		local DText = vgui.Create("DTextEntry", pnl)
+		local DButtonOK = vgui.Create("DButton", pnl)
+		DText:SetMaximumCharCount(50000)
+
+		local h = math.min(ScrH() - 100, 800)
+		pnl:SetSize(1200,h)
+		pnl:SetTitle("Long text with newline support for " .. self.CurrentKey .. ". If the text is too long, do not touch the label after this!")
+		pnl:SetPos(200, 100)
+		DButtonOK:SetText("OK")
+		DButtonOK:SetSize(80,20)
+		DButtonOK:SetPos(500, h - 25)
+		DText:SetPos(5,25)
+		DText:SetSize(1190,h - 50)
+		DText:SetMultiline(true)
+		DText:SetContentAlignment(7)
+		pnl:MakePopup()
+		DText:RequestFocus()
+		DText:SetText(pace.current_part[self.CurrentKey])
+
+		DButtonOK.DoClick = function()
+			local str = DText:GetText()
+			pace.current_part[self.CurrentKey] = str
+			if pace.current_part.ClassName == "sound2" then
+				pace.current_part.AllPaths = str
+				pace.current_part:UpdateSoundsFromAll()
+			end
+			pace.PopulateProperties(pace.current_part)
+			pnl:Remove()
+		end
+	end
+
+	pace.RegisterPanel(PANEL)
+end
+
 do -- script
 	local PANEL = {}
 
