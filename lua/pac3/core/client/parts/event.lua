@@ -1725,6 +1725,41 @@ end
 
 PART.last_event_triggered = false
 
+function PART:fix_args()
+	local eventData = self.Events[self.Event]
+	if not eventData then return end
+
+	local argInfos = eventData.__registeredArguments
+	if not argInfos then return end
+
+	local args = string.Split(self.Arguments, "@@")
+
+	for i, argInfo in ipairs(argInfos) do
+		local typ = argInfo[2]
+		local arg = args[i]
+
+		-- If missing or invalid, replace
+		if not arg or arg == "" or (typ ~= "string" and not tonumber(arg)) then
+			local userdata = argInfo[3] and argInfo[3][i]
+			local default = userdata and userdata.default
+			local newArg = "0"
+
+			-- Apply default if applicable
+			if default ~= nil then
+				if typ == "boolean" then
+					newArg = default and "1" or "0"
+				else
+					newArg = tostring(default)
+				end
+			end
+
+			args[i] = newArg
+		end
+	end
+
+	self.Arguments = table.concat(args, "@@")
+end
+
 function PART:OnThink()
 	local ent = get_owner(self)
 	if not ent:IsValid() then return end
@@ -1796,6 +1831,7 @@ function PART:ParseArguments(...)
 	end
 
 	self.Arguments = str
+	self:fix_args()
 end
 
 function PART:GetParsedArguments(eventObject)
