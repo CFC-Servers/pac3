@@ -98,7 +98,7 @@ function pac.FixUrl(url)
 end
 
 function pac.getContentLength(url, cb, failcb)
-	return http("HEAD", url, {["Accept-Encoding"] = "none"}, function(_, _, headers)
+	return http("HEAD", url, {}, function(_, _, headers)
 		local length
 
 		-- server have rights to send headers in any case
