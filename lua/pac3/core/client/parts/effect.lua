@@ -61,30 +61,29 @@ end
 
 PART.last_spew = 0
 
-if not pac_loaded_particle_effects then
-	pac_loaded_particle_effects = {}
-
-	for _, file_name in pairs(file.Find("particles/*.pcf", "GAME")) do
-		if not pac_loaded_particle_effects[file_name] and not pac.BlacklistedParticleSystems[file_name:lower()] then
-			game.AddParticles("particles/" .. file_name)
-		end
-
-		pac_loaded_particle_effects[file_name] = true
-	end
-end
-
-local already = {}
-local alreadyServer = {}
-local function pac_request_precache(name)
-	if already[name] then return end
-	already[name] = true
-	PrecacheParticleSystem(name)
-	net.Start("pac_request_precache")
-	net.WriteString(name)
-	net.SendToServer()
-end
+-- local already = {}
+-- local function pac_request_precache(name)
+-- 	if already[name] then return end
+-- 	already[name] = true
+-- 	PrecacheParticleSystem(name)
+-- 	net.Start("pac_request_precache")
+-- 	net.WriteString(name)
+-- 	net.SendToServer()
+-- end
 
 function PART:SetEffect(name)
+	if not pac_loaded_particle_effects then
+		pac_loaded_particle_effects = {}
+
+		for _, file_name in pairs(file.Find("particles/*.pcf", "GAME")) do
+			if not pac_loaded_particle_effects[file_name] and not pac.BlacklistedParticleSystems[file_name:lower()] then
+				game.AddParticles("particles/" .. file_name)
+			end
+
+			pac_loaded_particle_effects[file_name] = true
+		end
+	end
+
 	self.waitingForServer = true
 	self.Effect = name
 	self.Ready = true
@@ -102,6 +101,7 @@ function PART:SetEffect(name)
 	-- end
 end
 
+local alreadyServer = {}
 pac.AddHook("pac_EffectPrecached", "pac_Effects", function(name)
 	if alreadyServer[name] then return end
 	alreadyServer[name] = true
