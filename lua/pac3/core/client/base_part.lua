@@ -370,8 +370,14 @@ do -- scene graph
 			return
 		end
 
-		if self == part or part:HasChild(self) then
+		if self == part then
 			return false
+		end
+
+		for _, ancestor in ipairs(self:GetParentList()) do
+			if ancestor == part then
+				return false
+			end
 		end
 
 		if part:HasParent() then
