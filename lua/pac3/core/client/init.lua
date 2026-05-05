@@ -53,7 +53,6 @@ include("bones.lua")
 include("hooks.lua")
 include("owner_name.lua")
 include("integration_tools.lua")
-include("test.lua")
 include("ear_grab_animation.lua")
 
 pac.LoadParts()
