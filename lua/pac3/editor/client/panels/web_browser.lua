@@ -172,7 +172,7 @@ function PANEL:Show()
 		self:SetMouseInputEnabled(true)
 	end
 
-	if ValidPanel(self.browser) then
+	if IsValid(self.browser) then
 		self.browser:RequestFocus()
 	end
 end
@@ -182,15 +182,14 @@ function PANEL:Close()
 end
 
 pace.wiki_panel = NULL
-
-function pace.ShowWiki(url)
+function pace.ShowWiki(path)
 	if pace.wiki_panel:IsValid() then
 		pace.wiki_panel:Remove()
 	end
 
 	local pnl = pace.CreatePanel("web_browser")
-	pnl:OpenURL(url or pace.WikiURL)
-	pnl:SetSize(ScrW()*0.9, ScrH()*0.8)
+	pnl:OpenURL("https://wiki.pac3.info/" .. (path or ""))
+	pnl:SetSize( ScrW() * 0.9, ScrH() * 0.8 )
 	pnl:Center()
 	pnl:MakePopup()
 	pace.wiki_panel = pnl

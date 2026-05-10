@@ -691,29 +691,6 @@ do -- non editable string
 			lbl.pac_tooltip_hack = true
 			self.lbl = lbl
 		self:SetContent(lbl)
-
-		if self.part_name and self.key_name then
-			lbl.OnCursorEntered = function()
-
-				if lbl.wiki_info then
-					lbl:SetTooltip(lbl.wiki_info)
-					return
-				end
-
-				if not lbl.fetching_wiki then
-					lbl:SetCursor("waitarrow")
-					pace.GetPropertyDescription(self.part_name, self.key_name, function(str)
-						if lbl:IsValid() then
-							lbl:SetTooltip(str)
-							ChangeTooltip(lbl)
-							lbl.wiki_info = str
-							lbl:SetCursor("arrow")
-						end
-					end)
-					lbl.fetching_wiki = true
-				end
-			end
-		end
 	end
 
 	function PANEL:GetValue()

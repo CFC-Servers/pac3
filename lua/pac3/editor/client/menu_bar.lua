@@ -52,7 +52,7 @@ local function populate_pac(menu)
 
 		help:AddOption(
 			L"Getting Started",
-			function() pace.ShowWiki(pace.WikiURL .. "Beginners-FAQ") end
+			function() pace.ShowWiki("tutorial/editor") end
 		):SetImage(pace.MiscIcons.info)
 
 		do
