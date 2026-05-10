@@ -1,5 +1,4 @@
 local list_form = include("panels/list.lua")
-local L = pace.LanguageString
 
 local cache = {}
 
@@ -214,7 +213,7 @@ local function player_list_form(name, id, help)
 	label:SetText(help)
 
 	list_form(pnl, name, {
-		empty_message = L"No players online.",
+		empty_message = "No players online.",
 
 		name_left = "players",
 		populate_left = function()
@@ -294,7 +293,7 @@ do
 		for _, ply in ipairs(player.GetHumans()) do
 			if ply == pac.LocalPlayer then continue end
 
-			local icon = menu:AddOption(L"wear only for " .. ply:Nick(), function()
+			local icon = menu:AddOption("wear only for " .. ply:Nick(), function()
 				pace.WearParts(ply)
 			end)
 			icon:SetImage(pace.MiscIcons.wear)
@@ -307,7 +306,7 @@ function pace.FillWearSettings(pnl)
 	list:Dock(FILL)
 
 	do
-		local cat = list:Add(L"wear filter")
+		local cat = list:Add("wear filter")
 		cat.Header:SetSize(40,40)
 		cat.Header:SetFont("DermaLarge")
 		local list = vgui.Create("DListLayout")
@@ -328,14 +327,14 @@ function pace.FillWearSettings(pnl)
 
 			-- create form based on selection
 			if value == "steam friends" then
-				mode.form = generic_form(L"Only your steam friends can see your worn outfit.")
+				mode.form = generic_form("Only your steam friends can see your worn outfit.")
 			elseif value == "whitelist" then
-				mode.form = player_list_form(L"whitelist", "wear_whitelist", L"Only the players in the whitelist can see your worn outfit.")
+				mode.form = player_list_form("whitelist", "wear_whitelist", "Only the players in the whitelist can see your worn outfit.")
 			elseif value == "blacklist" then
-				mode.form = player_list_form( L"blacklist", "wear_blacklist", L"The players in the blacklist cannot see your worn outfit.")
+				mode.form = player_list_form( "blacklist", "wear_blacklist", "The players in the blacklist cannot see your worn outfit.")
 			else -- make sure we stay as one of these options
 				value = "disabled"
-				mode.form = generic_form(L"Everyone can see your worn outfit.")
+				mode.form = generic_form("Everyone can see your worn outfit.")
 			end
 
 			-- and set cvar to update filter
@@ -350,7 +349,7 @@ function pace.FillWearSettings(pnl)
 	end
 
 	do
-		local cat = list:Add(L"outfit filter")
+		local cat = list:Add("outfit filter")
 		cat.Header:SetSize(40,40)
 		cat.Header:SetFont("DermaLarge")
 		local list = vgui.Create("DListLayout")
@@ -371,14 +370,14 @@ function pace.FillWearSettings(pnl)
 
 			-- create form based on selection
 			if value == "steam friends" then
-				mode.form = generic_form(L"You will only see outfits from your steam friends.")
+				mode.form = generic_form("You will only see outfits from your steam friends.")
 			elseif value == "whitelist" then
-				mode.form = player_list_form(L"whitelist", "outfit_whitelist", L"You will only see outfits from the players in the whitelist.")
+				mode.form = player_list_form("whitelist", "outfit_whitelist", "You will only see outfits from the players in the whitelist.")
 			elseif value == "blacklist" then
-				mode.form = player_list_form(L"blacklist", "outfit_blacklist", L"You will see outfits from everyone except the players in the blacklist.")
+				mode.form = player_list_form("blacklist", "outfit_blacklist", "You will see outfits from everyone except the players in the blacklist.")
 			else -- make sure we stay as one of these options
 				value = "disabled"
-				mode.form = generic_form(L"You will see everyone's outfits.")
+				mode.form = generic_form("You will see everyone's outfits.")
 			end
 
 			-- and set cvar to update filter

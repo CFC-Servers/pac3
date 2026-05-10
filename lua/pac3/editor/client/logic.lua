@@ -2,7 +2,6 @@ pace.current_part = NULL
 pace.properties = NULL
 pace.tree = NULL
 
-local L = pace.LanguageString
 local alreadyInCall
 
 function pace.PopulateProperties(part)
@@ -58,7 +57,7 @@ function pace.OnOpenEditor()
 	pace.EnableView(true)
 
 	if table.Count(pac.GetLocalParts()) == 0 then
-		pace.Call("CreatePart", "group", L"my outfit")
+		pace.Call("CreatePart", "group", "my outfit")
 	end
 
 	pace.TrySelectPart()

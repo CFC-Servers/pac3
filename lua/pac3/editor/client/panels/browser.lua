@@ -1,4 +1,3 @@
-local L = pace.LanguageString
 local PANEL = {}
 
 PANEL.ClassName = "browser"
@@ -13,9 +12,9 @@ function PANEL:SetDir(str)
 end
 
 function PANEL:Init()
-	self:AddColumn(L"name")
-	self:AddColumn(L"size")
-	self:AddColumn(L"modified")
+	self:AddColumn("name")
+	self:AddColumn("size")
+	self:AddColumn("modified")
 	self:PopulateFromClient()
 	self:FixColumnsLayout()
 end
@@ -58,11 +57,11 @@ end
 
 function PANEL.OnRowRightClick(_self,id, self)
 	local m=DermaMenu()
-		m:AddOption(L"View",function()
+		m:AddOption("View",function()
 			self:GetListView():OnClickLine(self, true)
 			self:OnSelect()
 		end)
-		m:AddOption(L"wear on server",function()
+		m:AddOption("wear on server",function()
 			self:GetListView():OnClickLine(self, true)
 			self:OnSelect()
 			timer.Simple(0,function()

@@ -1,4 +1,3 @@
-local L = pace.LanguageString
 local PANEL = {}
 
 PANEL.ClassName = "editor"
@@ -375,7 +374,7 @@ local textCol, drawBox
 local boxW, boxH
 
 local function drawTimeBox(text, time, x, y)
-	local str = string.format("%s: %.3f ms", L(text), time)
+	local str = string.format("%s: %.3f ms", text, time)
 	drawBox(x, y, boxW - 5, RENDERSCORE_SIZE - 1)
 
 	surface.SetTextPos(x + 5, y)
@@ -412,7 +411,7 @@ function PANEL:PaintOver(w, h)
 		total = total + v
 	end
 
-	local str = string.format("%s: %.3f ms", L("average render time"), total * 1000)
+	local str = string.format("%s: %.3f ms", "average render time", total * 1000)
 	drawBox(x, y, w - 5, RENDERSCORE_SIZE - 1)
 
 	local mx, my = input.GetCursorPos()

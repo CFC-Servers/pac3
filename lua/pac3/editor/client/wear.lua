@@ -1,6 +1,4 @@
 
-local L = pace.LanguageString
-
 function pace.IsPartSendable(part)
 
 	if part:HasParent() then return false end
@@ -39,7 +37,7 @@ function pace.ClearParts()
 		if not pace.Editor:IsValid() then return end
 
 		if table.Count(pac.GetLocalParts()) == 0 then
-			pace.Call("CreatePart", "group", L"my outfit")
+			pace.Call("CreatePart", "group", "my outfit")
 		end
 
 		pace.TrySelectPart()

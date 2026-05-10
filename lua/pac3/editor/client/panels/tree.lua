@@ -1,5 +1,3 @@
-local L = pace.LanguageString
-
 local PANEL = {}
 
 PANEL.ClassName = "tree"
@@ -289,12 +287,12 @@ local function install_expand(node)
 			menu:SetPos(input.GetCursorPos())
 			menu:MakePopup()
 
-			menu:AddOption(L"collapse all", function()
+			menu:AddOption("collapse all", function()
 				node.part:CallRecursive('SetEditorExpand', false)
 				pace.RefreshTree(true)
 			end):SetImage('icon16/arrow_in.png')
 
-			menu:AddOption(L"expand all", function()
+			menu:AddOption("expand all", function()
 				node.part:CallRecursive('SetEditorExpand', true)
 				pace.RefreshTree(true)
 			end):SetImage('icon16/arrow_down.png')
@@ -419,7 +417,7 @@ function PANEL:PopulateParts(node, parts, children)
 
 			fix_folder_funcs(part_node)
 
-			if part.Description then part_node:SetTooltip(L(part.Description)) end
+			if part.Description then part_node:SetTooltip(part.Description) end
 
 			part.pace_tree_node = part_node
 			part_node.part = part

@@ -3,7 +3,6 @@ include("autorun/pac_core_init.lua")
 pace = pace or {}
 pace.luadata = include("pac3/libraries/luadata.lua")
 
-include("language.lua")
 include("icons.lua")
 
 include("util.lua")
@@ -98,8 +97,6 @@ function pace.OpenEditor()
 	pac.Enable()
 
 	pace.RefreshFiles()
-
-	pace.SetLanguage()
 
 	local editorWidth = 280
 

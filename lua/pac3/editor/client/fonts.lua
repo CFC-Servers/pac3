@@ -1,5 +1,3 @@
-local L = pace.LanguageString
-
 pace.Fonts = {}
 
 for i = 1, 5 do
@@ -48,12 +46,12 @@ function pace.SetFont(fnt)
 end
 
 function pace.AddFontsToMenu(menu)
-	local menu,pnl = menu:AddSubMenu(L"font")
+	local menu,pnl = menu:AddSubMenu("font")
 	pnl:SetImage("icon16/text_bold.png")
 	menu.GetDeleteSelf = function() return false end
 
 	for key, val in pairs(pace.Fonts) do
-		local pnl = menu:AddOption(L"The quick brown fox jumps over the lazy dog. (" ..val ..")", function()
+		local pnl = menu:AddOption("The quick brown fox jumps over the lazy dog. (" ..val ..")", function()
 			pace.SetFont(val)
 		end)
 

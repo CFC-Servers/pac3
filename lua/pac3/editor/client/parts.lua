@@ -1,5 +1,3 @@
-local L = pace.LanguageString
-
 -- load only when hovered above
 local function add_expensive_submenu_load(pnl, callback)
 	local old = pnl.OnCursorEntered
@@ -268,7 +266,7 @@ do -- menu
 		end)
 
 		local function add_part(menu, part)
-			local newMenuEntry = menu:AddOption(L(part.FriendlyName or part.ClassName:Replace('_', ' ')), function()
+			local newMenuEntry = menu:AddOption(part.FriendlyName or part.ClassName:Replace('_', ' '), function()
 				pace.RecordUndoHistory()
 				pace.Call("CreatePart", part.ClassName, nil, nil, parent)
 				pace.RecordUndoHistory()
@@ -302,7 +300,7 @@ do -- menu
 					sortedTree[name] = {}
 					sortedTree[name].parts = {}
 					sortedTree[name].icon = pace.GroupsIcons[name]
-					sortedTree[name].name = L(name)
+					sortedTree[name].name = name
 				end
 
 				partsToShow[part.ClassName] = nil
@@ -367,7 +365,7 @@ do -- menu
 		end
 
 		for class_name, part in pairs(partsToShow) do
-			local newMenuEntry = menu:AddOption(L((part.FriendlyName or part.ClassName):Replace('_', ' ')), function()
+			local newMenuEntry = menu:AddOption((part.FriendlyName or part.ClassName):Replace('_', ' '), function()
 				pace.RecordUndoHistory()
 				pace.Call("CreatePart", class_name, nil, nil, parent)
 				pace.RecordUndoHistory()
@@ -449,7 +447,7 @@ do -- menu
 
 				local label = line:Add("DLabel")
 				label:SetTextColor(label:GetSkin().Colours.Category.Line.Text)
-				label:SetText(L((part.FriendlyName or part.ClassName):Replace('_', ' ')))
+				label:SetText((part.FriendlyName or part.ClassName):Replace('_', ' '))
 				label:SizeToContents()
 				label:MoveRightOf(btn, 4)
 				label:SetMouseInputEnabled(false)
@@ -528,14 +526,14 @@ do -- menu
 
 		if obj then
 			if not obj:HasParent() then
-				menu:AddOption(L"wear", function() pace.SendPartToServer(obj) end):SetImage(pace.MiscIcons.wear)
+				menu:AddOption("wear", function() pace.SendPartToServer(obj) end):SetImage(pace.MiscIcons.wear)
 			end
 
-			menu:AddOption(L"copy", function() pace.Copy(obj) end):SetImage(pace.MiscIcons.copy)
-			menu:AddOption(L"paste", function() pace.Paste(obj) end):SetImage(pace.MiscIcons.paste)
-			menu:AddOption(L"cut", function() pace.Cut(obj) end):SetImage('icon16/cut.png')
-			menu:AddOption(L"paste properties", function() pace.PasteProperties(obj) end):SetImage(pace.MiscIcons.replace)
-			menu:AddOption(L"clone", function() pace.Clone(obj) end):SetImage(pace.MiscIcons.clone)
+			menu:AddOption("copy", function() pace.Copy(obj) end):SetImage(pace.MiscIcons.copy)
+			menu:AddOption("paste", function() pace.Paste(obj) end):SetImage(pace.MiscIcons.paste)
+			menu:AddOption("cut", function() pace.Cut(obj) end):SetImage('icon16/cut.png')
+			menu:AddOption("paste properties", function() pace.PasteProperties(obj) end):SetImage(pace.MiscIcons.replace)
+			menu:AddOption("clone", function() pace.Clone(obj) end):SetImage(pace.MiscIcons.clone)
 
 			menu:AddSpacer()
 		end
@@ -545,19 +543,19 @@ do -- menu
 		menu:AddSpacer()
 
 		if obj then
-			local save, pnl = menu:AddSubMenu(L"save", function() pace.SaveParts() end)
+			local save, pnl = menu:AddSubMenu("save", function() pace.SaveParts() end)
 			pnl:SetImage(pace.MiscIcons.save)
 			add_expensive_submenu_load(pnl, function() pace.AddSaveMenuToMenu(save, obj) end)
 		end
 
-		local load, pnl = menu:AddSubMenu(L"load", function() pace.LoadParts() end)
+		local load, pnl = menu:AddSubMenu("load", function() pace.LoadParts() end)
 		add_expensive_submenu_load(pnl, function() pace.AddSavedPartsToMenu(load, false, obj) end)
 
 		pnl:SetImage(pace.MiscIcons.load)
 
 		if obj then
 			menu:AddSpacer()
-			menu:AddOption(L"remove", function() pace.RemovePart(obj) end):SetImage(pace.MiscIcons.clear)
+			menu:AddOption("remove", function() pace.RemovePart(obj) end):SetImage(pace.MiscIcons.clear)
 		end
 
 		menu:Open()
@@ -574,11 +572,11 @@ do -- menu
 
 		menu:AddSpacer()
 
-		local load, pnl = menu:AddSubMenu(L"load", function() pace.LoadParts() end)
+		local load, pnl = menu:AddSubMenu("load", function() pace.LoadParts() end)
 		pnl:SetImage(pace.MiscIcons.load)
 		add_expensive_submenu_load(pnl, function() pace.AddSavedPartsToMenu(load, false, obj) end)
 
-		menu:AddOption(L"clear", function()
+		menu:AddOption("clear", function()
 			pace.ClearParts()
 		end):SetImage(pace.MiscIcons.clear)
 

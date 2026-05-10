@@ -244,7 +244,7 @@ do
 			findParent = pace.current_part
 		else
 			pace.RecordUndoHistory()
-			findParent = pace.Call("CreatePart", "group", L"paste data")
+			findParent = pace.Call("CreatePart", "group", "paste data")
 			pace.RecordUndoHistory()
 		end
 

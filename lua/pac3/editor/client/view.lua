@@ -1,6 +1,4 @@
 
-local L = pace.LanguageString
-
 local acsfnc = function(key, def)
 	pace["View" .. key] = def
 	pace["SetView" .. key] = function(val) pace["View" .. key] = val end

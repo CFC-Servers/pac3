@@ -1,5 +1,3 @@
-local L = pace.LanguageString
-
 local function populate_part_menu(menu, part, func)
 	if part:HasChildren() then
 		local menu, pnl = menu:AddSubMenu(pace.pac_show_uniqueid:GetBool() and string.format("%s (%s)", part:GetName(), part:GetPrintUniqueID()) or part:GetName(), function()
@@ -53,7 +51,7 @@ do -- bone
 
 		pace.SelectBone(pace.current_part:GetParentOwner(), function(data)
 			if not self:IsValid() then return end
-			self:SetValue(L(data.friendly))
+			self:SetValue(data.friendly)
 			self.OnValueChanged(data.friendly)
 		end, pace.current_part.ClassName == "bone" or pace.current_part.ClassName == "timeline_dummy_bone")
 	end
@@ -73,9 +71,9 @@ do -- bone
 		pace.CreateSearchList(
 			self,
 			self.CurrentKey,
-			L"bones",
+			"bones",
 			function(list)
-				list:AddColumn(L"name")
+				list:AddColumn("name")
 			end,
 			function()
 				return list
@@ -229,11 +227,11 @@ do -- custom animation frame event
 		pace.CreateSearchList(
 			self,
 			self.CurrentKey,
-			L"custom animations",
+			"custom animations",
 
 			function(list)
-				list:AddColumn(L"name")
-				list:AddColumn(L"id")
+				list:AddColumn("name")
+				list:AddColumn("id")
 			end,
 
 			function()
@@ -297,7 +295,7 @@ do -- owner
 			pace.current_part:SetOwnerName(ent:EntIndex())
 			local name = pace.current_part:GetOwnerName()
 			self.OnValueChanged(name)
-			self:SetValue(L(name))
+			self:SetValue(name)
 		end)
 	end
 
@@ -309,7 +307,7 @@ do -- owner
 			menu:AddOption(name, function() pace.current_part:SetOwnerName(name) self.OnValueChanged(name) end)
 		end
 
-		local entities = menu:AddSubMenu(L"entities", function() end)
+		local entities = menu:AddSubMenu("entities", function() end)
 		entities.GetDeleteSelf = function() return false end
 		for _, ent in pairs(ents.GetAll()) do
 			if ent:EntIndex() > 0 then
@@ -336,11 +334,11 @@ do -- sequence list
 		pace.CreateSearchList(
 			self,
 			self.CurrentKey,
-			L"animations",
+			"animations",
 
 			function(list)
-				list:AddColumn(L"id"):SetFixedWidth(25)
-				list:AddColumn(L"name")
+				list:AddColumn("id"):SetFixedWidth(25)
+				list:AddColumn("name")
 			end,
 
 			function()
@@ -656,7 +654,7 @@ do -- script
 		pace.SafeRemoveSpecialPanel()
 
 		local frame = vgui.Create("DFrame")
-		frame:SetTitle(L"script")
+		frame:SetTitle("script")
 		pace.ShowSpecial(frame, self, 512)
 		frame:SetSizable(true)
 
@@ -683,7 +681,7 @@ do -- script
 
 			if not part:IsValid() then frame:Remove() return end
 
-			local title = L"script editor"
+			local title = "script editor"
 
 			if part.Error then
 				title = part.Error

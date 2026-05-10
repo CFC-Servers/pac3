@@ -1,6 +1,5 @@
 local animations = pac.animations
 local eases = animations.eases
-local L = pace.LanguageString
 
 pace.timeline = pace.timeline or {}
 local timeline = pace.timeline
@@ -349,7 +348,7 @@ do
 		do -- time display info
 			local time = self:Add("DPanel")
 
-			local test = L"frame" .. ": 10.888"
+			local test = "frame" .. ": 10.888"
 			surface.SetFont(pace.CurrentFont)
 			local w,h = surface.GetTextSize(test)
 			time:SetWide(w)
@@ -363,14 +362,14 @@ do
 				if not timeline.animation_part then return end
 
 				local w,h = draw.TextShadow({
-					text = L"frame" .. ": " .. (animations.GetEntityAnimationFrame(timeline.entity, timeline.animation_part:GetAnimID()) or 0),
+					text = "frame" .. ": " .. (animations.GetEntityAnimationFrame(timeline.entity, timeline.animation_part:GetAnimID()) or 0),
 					font = pace.CurrentFont,
 					pos = {2, 0},
 					color = self:GetSkin().Colours.Category.Header
 				}, 1, 100)
 
 				draw.TextShadow({
-					text = L"time" .. ": " .. math.Round(timeline.GetCycle() * animations.GetAnimationDuration(timeline.entity, timeline.animation_part:GetAnimID()), 3),
+					text = "time" .. ": " .. math.Round(timeline.GetCycle() * animations.GetAnimationDuration(timeline.entity, timeline.animation_part:GetAnimID()), 3),
 					font = pace.CurrentFont,
 					pos = {2, h},
 					color = self:GetSkin().Colours.Category.Header
@@ -433,7 +432,7 @@ do
 
 				local add = saveload:Add("DImageButton")
 				add:SetImage("icon16/add.png")
-				add:SetTooltip(L"add keyframe")
+				add:SetTooltip("add keyframe")
 				add:SizeToContents()
 				add.DoClick = function() timeline.SelectKeyframe(self:AddKeyFrame()) timeline.Save() end
 				add:Dock(LEFT)
@@ -442,7 +441,7 @@ do
 
 				local bone = saveload:Add("DImageButton")
 				bone:SetImage("icon16/connect.png")
-				bone:SetTooltip(L"edit bones")
+				bone:SetTooltip("edit bones")
 				bone:SizeToContents()
 				bone:Dock(LEFT)
 				bone.DoClick = function()
@@ -451,20 +450,20 @@ do
 
 				local save = saveload:Add("DImageButton")
 				save:SetImage("icon16/disk.png")
-				save:SetTooltip(L"save")
+				save:SetTooltip("save")
 				save:SizeToContents()
 				save:Dock(RIGHT)
 				save.DoClick = function()
 					Derma_StringRequest(
-						L"question",
-						L"save as",
+						"question",
+						"save as",
 						timeline.animation_part:GetName(),
 						function(name)
 							animations.RegisterAnimation(name, table.Copy(timeline.data))
 							file.Write("pac3/__animations/" .. name .. ".txt", util.TableToJSON(timeline.data)) end,
 						function() end,
-						L"save",
-						L"cancel"
+						"save",
+						"cancel"
 					)
 				end
 
@@ -472,7 +471,7 @@ do
 				load:SetImage("icon16/folder.png")
 				load:SizeToContents()
 				load:Dock(RIGHT)
-				load:SetTooltip(L"load")
+				load:SetTooltip("load")
 				load.DoClick = function()
 					local menu = DermaMenu()
 					menu:SetPos(load:LocalToScreen())
@@ -941,28 +940,28 @@ do
 			timeline.SelectKeyframe(self)
 		elseif mc == MOUSE_RIGHT then
 			local menu = DermaMenu()
-			menu:AddOption(L"set length",function()
-				Derma_StringRequest(L"question",
-					L"how long should this frame be in seconds?",
+			menu:AddOption("set length",function()
+				Derma_StringRequest("question",
+					"how long should this frame be in seconds?",
 					tostring(self:GetWide()/secondDistance),
 					function(str) self:SetLength(tonumber(str)) end,
 					function() end,
-					L"set length",
-					L"cancel" )
+					"set length",
+					"cancel" )
 			end):SetImage("icon16/time.png")
 
-			menu:AddOption(L"multiply length",function()
-				Derma_StringRequest(L"question",
-					L"multiply "..self:GetAnimationIndex().."'s length",
+			menu:AddOption("multiply length",function()
+				Derma_StringRequest("question",
+					"multiply "..self:GetAnimationIndex().."'s length",
 					"1.0",
 					function(str) self:SetLength(1/tonumber(str)) end,
 					function() end,
-					L"multiply length",
-					L"cancel" )
+					"multiply length",
+					"cancel" )
 			end):SetImage("icon16/time_add.png")
 
 			if not self:GetRestart() then
-				menu:AddOption(L"set restart",function()
+				menu:AddOption("set restart",function()
 					for _,v in pairs(timeline.frame.keyframe_scroll:GetCanvas():GetChildren()) do
 						v:SetRestart(false)
 					end
@@ -970,14 +969,14 @@ do
 					timeline.data.RestartFrame = self:GetAnimationIndex()
 				end):SetImage("icon16/control_repeat_blue.png")
 			else
-				menu:AddOption(L"unset restart",function()
+				menu:AddOption("unset restart",function()
 					self:SetRestart(false)
 					timeline.data.StartFrame = nil
 				end):SetImage("icon16/control_repeat.png")
 			end
 
 			if not self:GetStart() then
-				menu:AddOption(L"set start",function()
+				menu:AddOption("set start",function()
 					for _,v in pairs(timeline.frame.keyframe_scroll:GetCanvas():GetChildren()) do
 						v:SetStart(false)
 					end
@@ -985,13 +984,13 @@ do
 					timeline.data.StartFrame = self:GetAnimationIndex()
 				end):SetImage("icon16/control_play_blue.png")
 			else
-				menu:AddOption(L"unset start",function()
+				menu:AddOption("unset start",function()
 					self:SetStart(false)
 					timeline.data.StartFrame = nil
 				end):SetImage("icon16/control_play.png")
 			end
 
-			menu:AddOption(L"reverse",function()
+			menu:AddOption("reverse",function()
 				local frame = timeline.data.FrameData[self:GetAnimationIndex() - 1]
 				if not frame then
 					frame = timeline.data.FrameData[#timeline.data.FrameData]
@@ -1009,7 +1008,7 @@ do
 				timeline.UpdateFrameData()
 			end):SetImage("icon16/control_rewind_blue.png")
 
-			menu:AddOption(L"duplicate to end", function()
+			menu:AddOption("duplicate to end", function()
 				local keyframe = timeline.frame:AddKeyFrame()
 
 				local tbl = self:GetData().BoneInfo
@@ -1027,7 +1026,7 @@ do
 				timeline.SelectKeyframe(keyframe)
 			end):SetImage("icon16/application_double.png")
 
-			menu:AddOption(L"remove",function()
+			menu:AddOption("remove",function()
 				local frameNum = self:GetAnimationIndex()
 				if frameNum == 1 and not timeline.data.FrameData[2] then return end
 				table.remove(timeline.data.FrameData, frameNum)
@@ -1054,7 +1053,7 @@ do
 				timeline.SelectKeyframe(timeline.frame.keyframe_scroll:GetCanvas():GetChildren()[offset])
 			end):SetImage("icon16/application_delete.png")
 
-			menu:AddOption(L"set easing style", function()
+			menu:AddOption("set easing style", function()
 				if timeline.data.Interpolation != "linear" then
 					local frame = vgui.Create("DFrame")
 					frame:SetSize(300, 100)
@@ -1097,7 +1096,7 @@ do
 			end):SetImage("icon16/arrow_turn_right.png")
 
 			if self:GetEaseStyle() then
-				menu:AddOption(L"unset easing style", function()
+				menu:AddOption("unset easing style", function()
 					self:RemoveEaseStyle()
 				end):SetImage("icon16/arrow_up.png")
 			end

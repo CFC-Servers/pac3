@@ -1,4 +1,3 @@
-local L = pace.LanguageString
 
 concommand.Add("pac_wear_parts", function(ply, _, _, file)
 	if file then
@@ -77,10 +76,10 @@ pace.SpawnlistBrowser = NULL
 function pace.ClientOptionsMenu(self)
 	if not IsValid(self) then return end
 
-	self:Button(L"show editor", "pac_editor")
-	self:CheckBox(L"enable", "pac_enable")
-	self:Button(L"clear", "pac_clear_parts")
-	self:Button(L"wear on server", "pac_wear_parts" )
+	self:Button("show editor", "pac_editor")
+	self:CheckBox("enable", "pac_enable")
+	self:Button("clear", "pac_clear_parts")
+	self:Button("wear on server", "pac_wear_parts" )
 
 	local browser = self:AddControl("pace_browser", {})
 
@@ -98,15 +97,15 @@ function pace.ClientOptionsMenu(self)
 
 	pace.SpawnlistBrowser = browser
 
-	self:Button(L"request outfits", "pac_request_outfits")
+	self:Button("request outfits", "pac_request_outfits")
 end
 
 function pace.ClientSettingsMenu(self)
 	if not IsValid(self) then return end
-	self:Help(L"Performance"):SetFont("DermaDefaultBold")
-		self:CheckBox(L"Enable PAC", "pac_enable")
-		self:NumSlider(L"Draw distance:", "pac_draw_distance", 0, 20000, 0)
-		self:NumSlider(L"Max render time: ", "pac_max_render_time", 0, 100, 0)
+	self:Help("Performance"):SetFont("DermaDefaultBold")
+		self:CheckBox("Enable PAC", "pac_enable")
+		self:NumSlider("Draw distance:", "pac_draw_distance", 0, 20000, 0)
+		self:NumSlider("Max render time: ", "pac_max_render_time", 0, 100, 0)
 end
 
 
@@ -134,7 +133,7 @@ hook.Add("PopulateToolMenu", "pac_spawnmenu", function()
 		"Utilities",
 		"PAC",
 		"PAC3",
-		L"PAC3",
+		"PAC3",
 		"",
 		"",
 		pace.ClientOptionsMenu,
@@ -146,7 +145,7 @@ hook.Add("PopulateToolMenu", "pac_spawnmenu", function()
 		"Utilities",
 		"PAC",
 		"PAC3S",
-		L"Settings",
+		"Settings",
 		"",
 		"",
 		pace.ClientSettingsMenu,

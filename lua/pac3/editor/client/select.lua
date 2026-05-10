@@ -1,5 +1,3 @@
-local L = pace.LanguageString
-
 pace.selectControl = {}
 local selectControl = pace.selectControl
 
@@ -246,11 +244,11 @@ local function select_something(tblin, check, getpos, getfriendly, callback, sel
 			if #selected == 1 then
 				local v = selected[1]
 				pace.DrawSelectionSelected(v.pos)
-				pace.DrawHUDText(v.pos.x, v.pos.y, L(v.friendly), 0, -30, v.pos.x, v.pos.y)
+				pace.DrawHUDText(v.pos.x, v.pos.y, v.friendly, 0, -30, v.pos.x, v.pos.y)
 				data = v
 				if selectCallback then selectCallback(v.key, v.value) end
 			else
-				table.sort(selected, function(a,b) return L(a.friendly) > L(b.friendly) end)
+				table.sort(selected, function(a,b) return a.friendly > b.friendly end)
 
 				local found
 				local rad = math.min(#selected * 30, 400)
@@ -263,12 +261,12 @@ local function select_something(tblin, check, getpos, getfriendly, callback, sel
 
 					if holding and pace.util.FastDistance2D(v.pos.x + sx, v.pos.y + sy, x, y) < area then
 						pace.DrawSelectionSelected(v.pos)
-						pace.DrawHUDText(v.pos.x, v.pos.y, L(v.friendly), sx, sy, v.pos.x, v.pos.y, true)
+						pace.DrawHUDText(v.pos.x, v.pos.y, v.friendly, sx, sy, v.pos.x, v.pos.y, true)
 						found = v
 						if selectCallback then selectCallback(v.key, v.value) end
 					else
 						pace.DrawSelectionHovered(v.pos)
-						pace.DrawHUDText(v.pos.x, v.pos.y, L(v.friendly), sx, sy, v.pos.x, v.pos.y, false, Color(255, 255, 255, 128))
+						pace.DrawHUDText(v.pos.x, v.pos.y, v.friendly, sx, sy, v.pos.x, v.pos.y, false, Color(255, 255, 255, 128))
 					end
 				end
 
