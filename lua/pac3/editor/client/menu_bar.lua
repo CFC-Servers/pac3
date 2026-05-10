@@ -54,19 +54,6 @@ local function populate_pac(menu)
 			L"Getting Started",
 			function() pace.ShowWiki("tutorial/editor") end
 		):SetImage(pace.MiscIcons.info)
-
-		do
-			local chat_pnl = help:AddOption(
-				L"Discord / PAC3 Chat",
-				function() gui.OpenURL("https://discord.gg/utpR3gJ") cookie.Set("pac3_discord_ad", 3)  end
-			) chat_pnl:SetImage(pace.MiscIcons.chat)
-
-			if cookie.GetNumber("pac3_discord_ad", 0) < 3 then
-				help_pnl.PaintOver = function(_,w,h) surface.SetDrawColor(255,255,0,50 + math.sin(SysTime()*20)*20) surface.DrawRect(0,0,w,h) end
-				chat_pnl.PaintOver = help_pnl.PaintOver
-				cookie.Set("pac3_discord_ad", cookie.GetNumber("pac3_discord_ad", 0) + 1)
-			end
-		end
 	end
 
 	do
