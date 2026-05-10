@@ -1,6 +1,5 @@
 
 pace.MiscIcons = {
-	about = "icon16/star.png",
 	appearance = "icon16/paintcan.png",
 	autoload = "icon16/transmit_go.png",
 	chat = "icon16/comment.png",

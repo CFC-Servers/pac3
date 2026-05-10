@@ -76,11 +76,6 @@ local function populate_pac(menu)
 
 			version:AddOption(version_string)
 		end
-
-		help:AddOption(
-			L"about",
-			function() pace.ShowAbout() end
-		):SetImage(pace.MiscIcons.about)
 	end
 
 	do

@@ -170,7 +170,6 @@ return {
 ["angles"] = "углы",
 ["help i have ocd (rounding numbers)"] = "помогите, у меня ОКР (округлить цифры)",
 ["suppress frames"] = "игнорировать кадры",
-["about"] = "об авторах",
 ["advanced mode"] = "продвинутый режим",
 ["show deprecated features"] = "показать устаревшие возможности",
 ["draw shadow"] = "показывать тень",

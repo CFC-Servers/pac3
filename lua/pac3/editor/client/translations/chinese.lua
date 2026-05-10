@@ -145,7 +145,6 @@ return {
 	["hide editor"] = "隐藏编辑器",
 	["camera follow"] = "相机跟随",
 	["reset view position"] = "重置相机位置",
-	["about"] = "关于PAC3",
 	["advanced mode"] = "高级模式",
 	["inverse collapse/expand controls"] = "反向折叠/展开控件",
 	["enable shift+move/rotate clone"] = "启用shift+移动/旋转克隆",

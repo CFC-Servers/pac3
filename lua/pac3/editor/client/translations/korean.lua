@@ -525,7 +525,6 @@ return {
 ["copy from faceposer tool"] = "얼굴조정 툴에서 복사해오기",
 ["script"] = "스크립트",
 ["custom_animation"] = "커스텀 애니메이션",
-["about"] = "크레딧",
 ["find"] = "값",
 ["Getting Started"] = "시작 튜토리얼(영어)",
 }

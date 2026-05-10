@@ -194,7 +194,6 @@ return {
 ["outline alpha"] = "alpha du contour",
 ["parent velocity right"] = "vitesse droite du parent",
 ["show weapon"] = "montrer l'arme",
-["about"] = "a propos",
 ["options"] = "options",
 ["show deprecated features"] = "montrer caracteristiques obsoletes",
 ["draw shadow"] = "dessiner ombres",

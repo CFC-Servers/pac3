@@ -142,7 +142,6 @@ return {
 ["outline alpha"] = "dışçizg alfası",
 ["parent velocity right"] = "ebeveyn sağ hızı",
 ["show weapon"] = "silahı göster",
-["about"] = "hakkında",
 ["options"] = "ayarlar",
 ["show deprecated features"] = "kaldırlılmış özellikleri göster",
 ["draw shadow"] = "gölgeyi göster",
