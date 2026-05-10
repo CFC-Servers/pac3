@@ -392,37 +392,8 @@ pac.AddHook('PostRenderVGUI', 'pac_DrawProfileInfos', PostRenderVGUI)
 function PANEL:PaintOver(w, h)
 	if not self.okay then return end
 	textCol = self:GetSkin().Colours.Category.Line.Text
-	local text = _G.PAC_VERSION and PAC_VERSION()
-	if text then
-		surface.SetFont("DermaDefault")
-		local x, y = self:LocalToScreen()
-		local w, h = surface.GetTextSize(text)
-		x = x + self:GetWide() + 4
-		y = y + self:GetTall() - 4 - h
-
-		local mx, my = gui.MousePos()
-		local cx, cy = self:LocalToScreen(x, y)
-
-		local hovering = false
-		DisableClipping(true)
-
-		if mx > x and mx < x + w and my > y and my < y + h then
-			hovering = true
-			text = "pac version: " .. text
-			w, h = surface.GetTextSize(text)
-
-			surface.SetDrawColor(0,0,0,255)
-			surface.DrawRect(x,y,w,h)
-		end
-
-		surface.SetTextPos(x,y)
-		surface.SetTextColor(255,255,255,hovering and 255 or 100)
-		surface.DrawText(text)
-		DisableClipping(false )
-	end
 
 	local data = self.rendertime_data
-
 	local x = 2
 	local y = 2
 	y = y + self.menu_bar:GetTall()

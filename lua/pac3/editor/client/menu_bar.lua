@@ -67,15 +67,6 @@ local function populate_pac(menu)
 				cookie.Set("pac3_discord_ad", cookie.GetNumber("pac3_discord_ad", 0) + 1)
 			end
 		end
-
-		local version_string = _G.PAC_VERSION and PAC_VERSION()
-		if version_string then
-			local version, version_pnl = help:AddSubMenu(L"Version", function() pace.ShowWiki() end)
-			version.GetDeleteSelf = function() return false end
-			version_pnl:SetImage(pace.MiscIcons.info)
-
-			version:AddOption(version_string)
-		end
 	end
 
 	do
