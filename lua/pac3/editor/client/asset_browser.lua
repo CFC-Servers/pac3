@@ -92,7 +92,6 @@ local function get_unlit_mat(path)
 end
 
 local next_generate_icon = 0
-local max_generating = 5
 
 local function setup_paint(panel, generate_cb, draw_cb)
 	local old = panel.Paint
@@ -577,8 +576,6 @@ function pace.AssetBrowser(callback, browse_types_str, part_key)
 	if pace.model_browser_browse_types ~= browse_types_str and pace.model_browser and pace.model_browser:IsValid() then
 		pace.model_browser:Remove()
 	end
-
-	local addModel
 
 	pace.model_browser_callback = function(...)
 		callback = callback or print
@@ -1141,7 +1138,6 @@ function pace.AssetBrowser(callback, browse_types_str, part_key)
 			for _, dir in ipairs(browse_types) do
 				local files, folders = file.Find(path .. dir .. "/*", pathid)
 				if files and (files[1] or folders[1]) then
-					local parent = node
 
 					local node = node:AddFolder(dir, path .. dir, pathid, false)
 					node.dir = dir

@@ -12,14 +12,6 @@ BUILDER:StartStorableVars()
 	BUILDER:GetSet("Translucent", true)
 BUILDER:EndStorableVars()
 
-local render_ReadPixel = render.ReadPixel
-local surface_SetDrawColor = surface.SetDrawColor
-local surface_DrawRect = surface.DrawRect
-local render_CapturePixels = render.CapturePixels
-
-local x2, y2
-local r,g,b
-
 function PART:SetSize(size)
 	self.Size = math.Clamp(size, 1, 32)
 end

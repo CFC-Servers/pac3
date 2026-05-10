@@ -18,14 +18,6 @@ function pace.CallHook(str, ...)
 	return hook.Call("pac_" .. str, GAMEMODE, ...)
 end
 
-
-local function wrap_err(ok,...)
-	if not ok then
-		ErrorNoHalt(tostring((...)) .. "\n")
-	end
-	return ...
-end
-
 function pace.PCallCriticalFunction(ply, func, ...)
 	if ply.pac_pcall_last_error and ply.pac_pcall_last_error + 1 > SysTime() then
 		local time = RealTime()
