@@ -41,11 +41,42 @@ function MUTATOR:StoreState()
 	return self.Entity:GetModel()
 end
 
+if SERVER then
+	pac.PRECACHE_ENT = pac.PRECACHE_ENT or nil
+	pac.PRECACHED_MODELS = pac.PRECACHED_MODELS or {}
+	function pac.PrecacheModel( mdl )
+		if pac.PRECACHED_MODELS[mdl] then return end
+		if util.IsModelLoaded( mdl ) then return end
+
+		print( "PAC: Pre-caching model: " .. mdl )
+
+		if not IsValid( pac.PRECACHE_ENT ) then
+			pac.PRECACHE_ENT = ents.Create( "prop_dynamic" )
+			pac.PRECACHE_ENT:SetModel( mdl )
+			pac.PRECACHE_ENT:Spawn()
+			pac.PRECACHE_ENT:Activate()
+			pac.PRECACHE_ENT:SetNoDraw( true )
+		end
+
+		pac.PRECACHE_ENT:SetModel( mdl )
+		pac.PRECACHE_ENT:SetNoDraw( true )
+
+		pac.PRECACHED_MODELS[mdl] = true
+	end
+end
+
 function MUTATOR:Mutate(path, svmodel)
 	self.Entity.pac_sv_model = svmodel
 	path = path or ""
 
 	if path:find("^http") then
+		if SERVER and CL_MODEL_ONLY:GetBool() and svmodel and svmodel ~= "" then
+			self.Entity.pac_modified_model = svmodel
+			self.actual_model = svmodel
+			pac.PrecacheModel(svmodel)
+			return
+		end
+
 		if SERVER and pac.debug then
 			if self.Owner:IsPlayer() then
 				pac.Message(self.Owner, " wants to use ", path, " as model on ", ent)
@@ -53,7 +84,6 @@ function MUTATOR:Mutate(path, svmodel)
 		end
 
 		local ent_str = tostring(self.Entity)
-
 		pac.DownloadMDL(path, function(mdl_path)
 			if not self.Entity:IsValid() then
 				pac.Message("cannot set model ", mdl_path, " on ", ent_str ,': entity became invalid')
@@ -66,10 +96,6 @@ function MUTATOR:Mutate(path, svmodel)
 
 			if CL_MODEL_ONLY:GetBool() then
 				if self.Entity:IsPlayer() then
-					if SERVER then
-						util.PrecacheModel(mdl_path)
-					end
-
 					if CLIENT then
 						self.Entity:SetModel(mdl_path)
 						fixLP(self.Entity)
