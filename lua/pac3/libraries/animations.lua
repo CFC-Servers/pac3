@@ -655,7 +655,7 @@ end
 
 hook.Add("Think", "pac_custom_animations", function()
 	for i,v in ipairs(animations.playing) do
-		if v.pac_animations then
+		if v.pac_animations and v.pac_is_drawing then
 			ProcessAnimations(v)
 		end
 	end
