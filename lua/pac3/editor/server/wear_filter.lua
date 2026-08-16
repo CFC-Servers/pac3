@@ -17,6 +17,17 @@ local function find_outfits(ply)
 end
 
 pace.PCallNetReceive(net.Receive, "pac_update_wearfilter", function(len, ply)
+	if ply.pac_wearfilter_cooldown and ply.pac_wearfilter_cooldown > CurTime() then
+		if ply.pac_wearfilter_log_cooldown and ply.pac_wearfilter_log_cooldown < CurTime() then
+			pac.Message("Player ", ply, " tried to submit wear filters too quickly, dropping.")
+			ply.pac_wearfilter_log_cooldown = CurTime() + 1
+		end
+
+		return
+	end
+
+	ply.pac_wearfilter_cooldown = CurTime() + 5
+
 	local sizeof = net.ReadUInt(8)
 
 	if sizeof > game.MaxPlayers() then
@@ -50,6 +61,17 @@ pace.PCallNetReceive(net.Receive, "pac_update_wearfilter", function(len, ply)
 end)
 
 pace.PCallNetReceive(net.Receive, "pac_update_outfitfilter", function(len, ply)
+	if ply.pac_outfitfilter_cooldown and ply.pac_outfitfilter_cooldown > CurTime() then
+		if ply.pac_outfitfilter_log_cooldown and ply.pac_outfitfilter_log_cooldown < CurTime() then
+			pac.Message("Player ", ply, " tried to submit outfit filters too quickly, dropping.")
+			ply.pac_outfitfilter_log_cooldown = CurTime() + 1
+		end
+
+		return
+	end
+
+	ply.pac_outfitfilter_cooldown = CurTime() + 5
+
 	local sizeof = net.ReadUInt(8)
 
 	if sizeof > game.MaxPlayers() then
@@ -71,6 +93,11 @@ pace.PCallNetReceive(net.Receive, "pac_update_outfitfilter", function(len, ply)
 end)
 
 function pace.UpdateWearFilters()
+	for _, ply in player.Iterator() do
+		ply.pac_wearfilter_cooldown = nil
+		ply.pac_outfitfilter_cooldown = nil
+	end
+
 	net.Start('pac_update_wearfilter')
 	net.Broadcast()
 
