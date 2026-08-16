@@ -22,14 +22,18 @@ local function jsonid(ply)
 	return "_" .. pac.Hash(ply)
 end
 
-local function update_ignore()
+local function update_ignore(shouldRequest)
 	for _, ply in ipairs(player.GetHumans()) do
 		pac.ToggleIgnoreEntity(ply, pace.ShouldIgnorePlayer(ply), "wear_filter")
+	end
+
+	if shouldRequest then
+		RunConsoleCommand("pac_request_outfits")
 	end
 end
 
 hook.Add("PlayerSpawn", "pace_outfit_ignore_update", function()
-	update_ignore()
+	update_ignore(false)
 end)
 
 net.Receive("pac.TogglePartDrawing", function()
@@ -237,7 +241,7 @@ local function player_list_form(name, id, help)
 			store_config(id, tbl)
 
 			if id:StartWith("outfit") then
-				update_ignore()
+				update_ignore(id:EndsWith("whitelist")) -- auto-request if adding to whitelist (store_ is backwards???)
 			end
 		end,
 
@@ -268,7 +272,7 @@ local function player_list_form(name, id, help)
 			store_config(id, tbl)
 
 			if id:StartWith("outfit") then
-				update_ignore()
+				update_ignore(id:EndsWith("blacklist")) -- auto-request if removing from blacklist (store_ is backwards???)
 			end
 		end,
 	})
@@ -385,7 +389,7 @@ function pace.FillWearSettings(pnl)
 
 			mode.form:SetParent(list)
 
-			update_ignore()
+			update_ignore(true)
 		end
 
 		local mode_str = GetConVar("pace_outfit_filter_mode"):GetString():gsub("_", " ")
