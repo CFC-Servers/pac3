@@ -29,6 +29,10 @@ local function update_ignore(shouldRequest)
 
 	if shouldRequest then
 		RunConsoleCommand("pac_request_outfits")
+	else
+		-- Transmit to server with a delay to coalesce rapid changes.
+		-- Don't need to transmit when requesting as that already makes the server prompt a filter update on everyone.
+		timer.Create( "pace_transmit_outfit_ignore", 4, pace.TransmitOutfitFilter )
 	end
 end
 
@@ -293,7 +297,20 @@ do
 		net.SendToServer()
 	end)
 
-	net.Receive("pac_update_outfitfilter", function()
+	net.Receive("pac_update_outfitfilter", pace.TransmitOutfitFilter )
+
+	function pace.PopulateWearMenu(menu)
+		for _, ply in ipairs(player.GetHumans()) do
+			if ply == pac.LocalPlayer then continue end
+
+			local icon = menu:AddOption("wear only for " .. ply:Nick(), function()
+				pace.WearParts(ply)
+			end)
+			icon:SetImage(pace.MiscIcons.wear)
+		end
+	end
+
+	function pace.TransmitOutfitFilter()
 		local mode = GetConVar("pace_wear_filter_mode"):GetString()
 		local ids = {} -- ids of ignored players
 
@@ -313,17 +330,6 @@ do
 		end
 
 		net.SendToServer()
-	end)
-
-	function pace.PopulateWearMenu(menu)
-		for _, ply in ipairs(player.GetHumans()) do
-			if ply == pac.LocalPlayer then continue end
-
-			local icon = menu:AddOption("wear only for " .. ply:Nick(), function()
-				pace.WearParts(ply)
-			end)
-			icon:SetImage(pace.MiscIcons.wear)
-		end
 	end
 end
 
