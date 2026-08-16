@@ -1,6 +1,7 @@
 
 util.AddNetworkString('pac_submit_acknowledged')
-util.AddNetworkString('pac_update_playerfilter')
+util.AddNetworkString('pac_update_wearfilter')
+util.AddNetworkString('pac_update_outfitfilter')
 
 local function find_outfits(ply)
 	for id, outfits in pairs(pace.Parts) do
@@ -15,7 +16,7 @@ local function find_outfits(ply)
 	return {}
 end
 
-pace.PCallNetReceive(net.Receive, "pac_update_playerfilter", function(len, ply)
+pace.PCallNetReceive(net.Receive, "pac_update_wearfilter", function(len, ply)
 	local sizeof = net.ReadUInt(8)
 
 	if sizeof > game.MaxPlayers() then
@@ -48,7 +49,31 @@ pace.PCallNetReceive(net.Receive, "pac_update_playerfilter", function(len, ply)
 	end
 end)
 
+pace.PCallNetReceive(net.Receive, "pac_update_outfitfilter", function(len, ply)
+	local sizeof = net.ReadUInt(8)
+
+	if sizeof > game.MaxPlayers() then
+		pac.Message("Player ", ply, " tried to submit extraordinary outfit filter size of ", sizeof, ", dropping.")
+		return
+	end
+
+	local filter = {}
+
+	for i = 1, sizeof do
+		local p = player.GetBySteamID64(net.ReadString())
+
+		if IsValid(p) then
+			filter[p] = true
+		end
+	end
+
+	ply.pac_outfit_ignore_lookup = filter
+end)
+
 function pace.UpdateWearFilters()
-	net.Start('pac_update_playerfilter')
+	net.Start('pac_update_wearfilter')
+	net.Broadcast()
+
+	net.Start('pac_update_outfitfilter')
 	net.Broadcast()
 end

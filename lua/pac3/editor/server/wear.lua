@@ -240,6 +240,12 @@ function pace.SubmitPartNow(data, filter)
 				local ply = players[key]
 				if not ply.pac_requested_outfits and ply ~= owner then
 					table.remove(players, key)
+				else
+					local ignoreLookup = ply.pac_outfit_ignore_lookup
+
+					if ignoreLookup and ignoreLookup[owner] then
+						table.remove(players, key)
+					end
 				end
 			end
 

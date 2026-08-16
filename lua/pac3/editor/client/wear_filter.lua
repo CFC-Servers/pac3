@@ -281,9 +281,31 @@ local function player_list_form(name, id, help)
 end
 
 do
-	net.Receive("pac_update_playerfilter", function()
+	net.Receive("pac_update_wearfilter", function()
 		local ids = pace.CreateWearFilter()
-		net.Start("pac_update_playerfilter")
+		net.Start("pac_update_wearfilter")
+		net.WriteUInt(#ids, 8)
+
+		for _, val in ipairs(ids) do
+			net.WriteString(val)
+		end
+
+		net.SendToServer()
+	end)
+
+	net.Receive("pac_update_outfitfilter", function()
+		local mode = GetConVar("pace_wear_filter_mode"):GetString()
+		local ids = {} -- ids of ignored players
+
+		if mode ~= "disabled" then
+			for _, ply in ipairs(player.GetHumans()) do
+				if pace.ShouldIgnorePlayer(ply) then
+					table.insert(ids, ply:SteamID64())
+				end
+			end
+		end
+
+		net.Start("pac_update_outfitfilter")
 		net.WriteUInt(#ids, 8)
 
 		for _, val in ipairs(ids) do
