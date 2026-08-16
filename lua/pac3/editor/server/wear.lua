@@ -443,3 +443,7 @@ function pace.RequestOutfits(ply)
 end
 
 concommand.Add("pac_request_outfits", pace.RequestOutfits)
+
+hook.Add("pac_initial_spawn", "pac_update_wear_filter", function(ply)
+	pace.UpdateWearFilters() -- Prevent wear filters from being skipped for a player who joins and doesn't manually request outfits
+end)
