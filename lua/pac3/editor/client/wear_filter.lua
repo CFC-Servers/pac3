@@ -32,7 +32,7 @@ local function update_ignore(shouldRequest)
 	else
 		-- Transmit to server with a delay to coalesce rapid changes.
 		-- Don't need to transmit when requesting as that already makes the server prompt a filter update on everyone.
-		timer.Create( "pace_transmit_outfit_ignore", 4, pace.TransmitOutfitFilter )
+		timer.Create( "pace_transmit_outfit_ignore", 4, 1, pace.TransmitOutfitFilter )
 	end
 end
 
