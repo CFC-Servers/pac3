@@ -141,10 +141,10 @@ function pace.UpdateWearFilters()
 		ply.pac_outfitfilter_cooldown = nil
 	end
 
-	net.Start('pac_update_wearfilter')
+	net.Start('pac_update_outfitfilter')
 	net.Broadcast()
 
-	net.Start('pac_update_outfitfilter')
+	net.Start('pac_update_wearfilter')
 	net.Broadcast()
 end
 
@@ -166,9 +166,9 @@ function pace.UpdateWearFiltersSingular(ply)
 	net.WriteString(ply:SteamID())
 	net.Send(plys)
 
-	net.Start('pac_update_wearfilter')
+	net.Start('pac_update_outfitfilter')
 	net.Send(ply)
 
-	net.Start('pac_update_outfitfilter')
+	net.Start('pac_update_wearfilter')
 	net.Send(ply)
 end
