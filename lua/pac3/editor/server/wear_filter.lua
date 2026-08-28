@@ -1,9 +1,9 @@
 
-util.AddNetworkString('pac_submit_acknowledged')
-util.AddNetworkString('pac_update_wearfilter')
-util.AddNetworkString('pac_update_wearfilter_singular_add')
-util.AddNetworkString('pac_update_outfitfilter')
-util.AddNetworkString('pac_update_outfitfilter_singular_add')
+util.AddNetworkString("pac_submit_acknowledged")
+util.AddNetworkString("pac_update_wearfilter")
+util.AddNetworkString("pac_update_wearfilter_singular_add")
+util.AddNetworkString("pac_update_outfitfilter")
+util.AddNetworkString("pac_update_outfitfilter_singular_add")
 
 local function find_outfits(ply)
 	for id, outfits in pairs(pace.Parts) do
@@ -136,10 +136,10 @@ function pace.UpdateWearFilters()
 		clearCooldown(ply, "wearfilter")
 	end
 
-	net.Start('pac_update_outfitfilter')
+	net.Start("pac_update_outfitfilter")
 	net.Broadcast()
 
-	net.Start('pac_update_wearfilter')
+	net.Start("pac_update_wearfilter")
 	net.Broadcast()
 end
 
@@ -158,17 +158,17 @@ function pace.UpdateWearFiltersSingular(ply)
 	local plys = player.GetHumans()
 	table.RemoveByValue(plys, ply)
 
-	net.Start('pac_update_wearfilter_singular_add')
+	net.Start("pac_update_wearfilter_singular_add")
 	net.WriteString(pac.Hash(ply))
 	net.Send(plys)
 
-	net.Start('pac_update_outfitfilter_singular_add')
+	net.Start("pac_update_outfitfilter_singular_add")
 	net.WriteString(ply:SteamID())
 	net.Send(plys)
 
-	net.Start('pac_update_outfitfilter')
+	net.Start("pac_update_outfitfilter")
 	net.Send(ply)
 
-	net.Start('pac_update_wearfilter')
+	net.Start("pac_update_wearfilter")
 	net.Send(ply)
 end
