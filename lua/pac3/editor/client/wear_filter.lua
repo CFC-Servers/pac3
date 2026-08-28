@@ -36,10 +36,6 @@ local function update_ignore(shouldRequest)
 	end
 end
 
-hook.Add("PlayerSpawn", "pace_outfit_ignore_update", function()
-	update_ignore(false)
-end)
-
 net.Receive("pac.TogglePartDrawing", function()
 	local ent = net.ReadEntity()
 
