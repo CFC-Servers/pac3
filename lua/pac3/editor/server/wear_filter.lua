@@ -25,10 +25,10 @@ local function updateWearFilter(ply, ids)
 		if outfit.wear_filter then
 			for _, id in ipairs(ids) do
 				if not table.HasValue(outfit.wear_filter, id) then
-					local ply = pac.ReverseHash(id, "Player")
-					if ply:IsValid() then
-						if ply.pac_requested_outfits and not ply.pac_gonna_receive_outfits then
-							pace.SubmitPart(outfit, ply)
+					local p = pac.ReverseHash(id, "Player")
+					if p:IsValid() then
+						if p.pac_requested_outfits and not p.pac_gonna_receive_outfits then
+							pace.SubmitPart(outfit, p)
 						end
 					end
 				end
