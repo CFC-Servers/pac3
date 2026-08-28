@@ -297,7 +297,33 @@ do
 		net.SendToServer()
 	end)
 
+	net.Receive("pac_update_wearfilter_singular_add",function()
+		local ids = pace.CreateWearFilter()
+		local id = net.ReadString()
+		if not table.HasValue(ids, id) then return end
+
+		net.Start("pac_update_wearfilter_singular_add")
+		net.WriteString(id)
+		net.SendToServer()
+	end)
+
 	net.Receive("pac_update_outfitfilter", pace.TransmitOutfitFilter )
+
+	net.Receive("pac_update_outfitfilter_singular_add",function()
+		local id = net.ReadString()
+		local ply = player.GetBySteamID(id)
+		if not IsValid(ply) then return end
+
+		if pace.ShouldIgnorePlayer(ply) then
+			pac.IgnoreEntity(ply, "wear_filter")
+
+			return
+		end
+
+		net.Start("pac_update_outfitfilter_singular_add")
+		net.WriteString(id)
+		net.SendToServer()
+	end)
 
 	function pace.PopulateWearMenu(menu)
 		for _, ply in ipairs(player.GetHumans()) do
