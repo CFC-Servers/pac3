@@ -61,16 +61,4 @@ do
 	for i, val in ipairs(tohash) do
 		pac.BlacklistedParticleSystems[val] = true
 	end
-
-	hook.Add("PlayerInitialSpawn", "pac_initial_spawn", function(ply)
-		local id = "pac_initial_spawn" .. ply:UniqueID()
-		hook.Add( "SetupMove", id, function(movingPly, _, cmd)
-			if not ply:IsValid() then
-				hook.Remove("SetupMove", id)
-			elseif movingPly == ply and not cmd:IsForced() then
-				hook.Run("pac_initial_spawn", ply)
-				hook.Remove("SetupMove", id)
-			end
-		end)
-	end)
 end
