@@ -311,7 +311,7 @@ do
 	end
 
 	function pace.TransmitOutfitFilter()
-		local mode = GetConVar("pace_wear_filter_mode"):GetString()
+		local mode = GetConVar("pace_outfit_filter_mode"):GetString()
 		local ids = {} -- ids of ignored players
 
 		if mode ~= "disabled" then
