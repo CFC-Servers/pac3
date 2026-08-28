@@ -145,6 +145,9 @@ end
 
 -- For when a player joins the server.
 function pace.UpdateWearFiltersSingular(ply)
+	-- Technically could miss some messages due to cooldowns if 2+ players full load at the same time,
+	-- but gmod load time variance should make this a non-issue.
+	-- TODO: Needs thorough testing against map changes with high player count.
 	for _, p in player.Iterator() do
 		clearCooldown(p, "wearfilter_singular")
 		clearCooldown(p, "outfitfilter_singular")
