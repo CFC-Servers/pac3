@@ -39,39 +39,34 @@ local function updateWearFilter(ply, ids)
 	end
 end
 
-local function checkWearFilterCooldown(ply)
-	if ply.pac_wearfilter_cooldown and ply.pac_wearfilter_cooldown > CurTime() then
-		if ply.pac_wearfilter_log_cooldown and ply.pac_wearfilter_log_cooldown < CurTime() then
-			pac.Message("Player ", ply, " tried to submit wear filters too quickly, dropping.")
-			ply.pac_wearfilter_log_cooldown = CurTime() + 1
+local function checkCooldown(ply, cooldownID, cooldownDisplay)
+	local varNameCD = "pac_cooldown_" .. cooldownID
+	local varNameLogCD = "pac_log_cooldown_" .. cooldownID
+	local curCooldown = ply[varNameCD]
+
+	if curCooldown and curCooldown > CurTime() then
+		local logCooldown = ply[varNameLogCD]
+
+		if logCooldown and logCooldown < CurTime() then
+			pac.Message("Player ", ply, " tried to submit " .. cooldownDisplay .. " too quickly, dropping.")
+			ply[varNameLogCD] = CurTime() + 1
 		end
 
 		return false
 	end
 
-	ply.pac_wearfilter_cooldown = CurTime() + 5
+	ply[varNameCD] = CurTime() + 5
 
 	return true
 end
 
-local function checkOutfitFilterCooldown(ply)
-	if ply.pac_outfitfilter_cooldown and ply.pac_outfitfilter_cooldown > CurTime() then
-		if ply.pac_outfitfilter_log_cooldown and ply.pac_outfitfilter_log_cooldown < CurTime() then
-			pac.Message("Player ", ply, " tried to submit outfit filters too quickly, dropping.")
-			ply.pac_outfitfilter_log_cooldown = CurTime() + 1
-		end
-
-		return false
-	end
-
-	ply.pac_outfitfilter_cooldown = CurTime() + 5
-
-	return true
+local function clearCooldown(ply, cooldownID)
+	ply["pac_cooldown_" .. cooldownID] = nil
 end
 
 
 pace.PCallNetReceive(net.Receive, "pac_update_wearfilter", function(len, ply)
-	if not checkWearFilterCooldown(ply) then return end
+	if not checkCooldown(ply, "wearfilter", "wear filters") then return end
 
 	local sizeof = net.ReadUInt(8)
 
@@ -90,7 +85,7 @@ pace.PCallNetReceive(net.Receive, "pac_update_wearfilter", function(len, ply)
 end)
 
 pace.PCallNetReceive(net.Receive, "pac_update_wearfilter_singular_add", function(len, ply)
-	if not checkWearFilterCooldown(ply) then return end
+	if not checkCooldown(ply, "wearfilter_singular", "singular wear filters") then return end
 
 	local ids = ply.pac_wearfilter_ids or {}
 	local id = net.ReadString()
@@ -102,7 +97,7 @@ pace.PCallNetReceive(net.Receive, "pac_update_wearfilter_singular_add", function
 end)
 
 pace.PCallNetReceive(net.Receive, "pac_update_outfitfilter", function(len, ply)
-	if not checkOutfitFilterCooldown(ply) then return end
+	if not checkCooldown(ply, "outfitfilter", "outfit filters") then return end
 
 	local sizeof = net.ReadUInt(8)
 
@@ -125,7 +120,7 @@ pace.PCallNetReceive(net.Receive, "pac_update_outfitfilter", function(len, ply)
 end)
 
 pace.PCallNetReceive(net.Receive, "pac_update_outfitfilter_singular_add", function(len, ply)
-	if not checkOutfitFilterCooldown(ply) then return end
+	if not checkCooldown(ply, "outfitfilter_singular", "singular outfit filters") then return end
 
 	local lookup = ply.pac_outfit_ignore_lookup or {}
 	local p = player.GetBySteamID64(net.ReadString())
@@ -137,8 +132,8 @@ end)
 
 function pace.UpdateWearFilters()
 	for _, ply in player.Iterator() do
-		ply.pac_wearfilter_cooldown = nil
-		ply.pac_outfitfilter_cooldown = nil
+		clearCooldown(ply, "outfitfilter")
+		clearCooldown(ply, "wearfilter")
 	end
 
 	net.Start('pac_update_outfitfilter')
@@ -151,8 +146,10 @@ end
 -- For when a player joins the server.
 function pace.UpdateWearFiltersSingular(ply)
 	for _, p in player.Iterator() do
-		p.pac_wearfilter_cooldown = nil
-		p.pac_outfitfilter_cooldown = nil
+		clearCooldown(p, "wearfilter_singular")
+		clearCooldown(p, "outfitfilter_singular")
+		clearCooldown(p, "outfitfilter")
+		clearCooldown(p, "wearfilter")
 	end
 
 	local plys = player.GetHumans()
