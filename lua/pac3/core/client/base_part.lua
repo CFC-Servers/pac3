@@ -115,7 +115,7 @@ function PART:GetName()
 end
 
 function PART:SetUniqueID(id)
-	if id then
+	if id and id ~= "" then
 		local existing = pac.GetPartFromUniqueID(self:GetPlayerOwnerId(), id)
 
 		if existing:IsValid() then

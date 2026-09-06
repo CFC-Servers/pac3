@@ -42,7 +42,7 @@ function pac.CreatePart(name, owner, tbl, make_copy, level)
 	part.Id = part_count
 	part_count = part_count + 1
 
-	if not tbl or not tbl.self.UniqueID then
+	if not tbl or not tbl.self.UniqueID or tbl.self.UniqueID == "" then
 		part:SetUniqueID(pac.Hash())
 	end
 
