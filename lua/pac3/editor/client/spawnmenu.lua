@@ -1,9 +1,10 @@
 
 concommand.Add("pac_wear_parts", function(ply, _, _, file)
 	if file then
-		file = string.Trim(file)
+		file = string.Trim(string.Replace(file, "\\", "/"))
+		file = string.Trim(string.Replace(file, "\"", ""))
 		if file ~= "" then
-			pace.LoadParts(string.Trim(string.Replace(file, "\"", "")), true)
+			pace.LoadParts(file, true)
 		end
 	end
 

@@ -207,16 +207,16 @@ function pace.LoadParts(name, clear, override_part)
 			if name == "autoload" and (not data or not next(data)) then
 				local err
 				data,err = pace.luadata.ReadFile("pac3/sessions/" .. name .. ".txt",nil,true)
-				if not data then
-					if err then
-						ErrorNoHalt(("Autoload failed: %s\n"):format(err))
-					end
-					return
+			if not data then
+				if err then
+					pac.Message("Autoload failed: " .. err)
 				end
-			elseif not data then
-				ErrorNoHalt(("Decoding %s failed: %s\n"):format(name,err))
 				return
 			end
+		elseif not data then
+			pace.MessagePrompt(("Decoding %s failed: %s"):format(name,err), "Load Failed", "OK")
+			return
+		end
 
 			pace.LoadPartsFromTable(data, clear, override_part)
 		end
