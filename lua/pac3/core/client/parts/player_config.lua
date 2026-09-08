@@ -94,7 +94,7 @@ function PART:OnShow()
 	local ent = self:GetActualOwner()
 
 	if ent:IsValid() then
-		pac.emut.MutateEntity(self:GetPlayerOwner(), "blood_color", ent, blood_colors[self.BloodColor == "" and "red" or self.BloodColor])
+		pac.emut.MutateEntity(self:GetPlayerOwner(), "blood_color", ent, blood_colors[self.BloodColor] or blood_colors.red)
 	end
 
 	if ent:IsValid() then
@@ -131,7 +131,7 @@ function PART:SetBloodColor(str)
 
 	local ent = self:GetActualOwner()
 	if ent:IsValid() then
-		pac.emut.MutateEntity(self:GetPlayerOwner(), "blood_color", ent, blood_colors[self.BloodColor == "" and "red" or self.BloodColor])
+		pac.emut.MutateEntity(self:GetPlayerOwner(), "blood_color", ent, blood_colors[self.BloodColor] or blood_colors.red)
 	end
 end
 

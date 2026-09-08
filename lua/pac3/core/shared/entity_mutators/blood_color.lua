@@ -3,7 +3,7 @@ local MUTATOR = {}
 MUTATOR.ClassName = "blood_color"
 
 function MUTATOR:WriteArguments(enum)
-	if -1 > enum and enum > 6 then
+	if not enum or enum < -1 or enum > 6 then
 		enum = 0
 	end
 
