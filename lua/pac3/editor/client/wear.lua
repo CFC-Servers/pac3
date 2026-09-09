@@ -119,6 +119,7 @@ do -- from server
 	function pace.WearPartFromServer(owner, part_data, data, doItNow)
 		pac.dprint("received outfit %q from %s with %i number of children to set on %s", part_data.self.Name or "", tostring(owner), table.Count(part_data.children), part_data.self.OwnerName or "")
 
+		if not IsValid(owner) or not owner:IsPlayer() or pac.IsEntityIgnored(owner) then return end
 		if pace.CallHook("WearPartFromServer", owner, part_data, data) == false then return end
 
 		local dupepart = pac.GetPartFromUniqueID(data.player_uid, part_data.self.UniqueID)
