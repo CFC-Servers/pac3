@@ -327,6 +327,11 @@ for ease,f in pairs(math.ease) do
 		local f2 = function(self, frac, min, max)
 			min = min or 0
 			max = max or 1
+
+			if frac == nil then
+				error("input " .. ease .. " requires a fraction argument (0 to 1). the input field cannot provide arguments, so use the expression field instead, e.g. " .. ease .. "(time())", 0)
+			end
+
 			return min + f(frac)*(max-min)
 		end
 		PART.Inputs["ease"..ease] = f2
@@ -989,6 +994,7 @@ function PART:OnHide()
 	self.rand = nil
 	self.rand_id = nil
 	self.vec_additive = Vector()
+	self.last_proxy_error = nil
 
 	if self.ResetVelocitiesOnHide then
 		self.last_vel = nil
@@ -1084,10 +1090,25 @@ local function set(self, part, x, y, z, children)
 end
 
 function PART:RunExpression(ExpressionFunc)
-	if ExpressionFunc==true then
+	if ExpressionFunc == true then
 		return false,self.ExpressionError
 	end
 	return pcall(ExpressionFunc)
+end
+
+local function proxy_error(self, msg)
+	if self.last_proxy_error == msg then return end
+	self.last_proxy_error = msg
+
+	self:SetError(msg)
+	table.insert(pac.Errors, msg)
+
+	pac.Message("proxy error on ", tostring(self), ":")
+	MsgC(Color(255, 100, 100), debug.traceback(msg), "\n")
+
+	if self:GetPlayerOwner() == pac.LocalPlayer then
+		chat.AddText(Color(255,180,180), "============\n[ERR] PAC Proxy error on " .. tostring(self) .. ":\n" .. msg .. "\n(see console for the full error)\n============\n")
+	end
 end
 
 function PART:OnThink()
@@ -1185,13 +1206,20 @@ function PART:OnThink()
 			local ran, err = pcall( input_function, self )
 
 			if not ran then
-				error("proxy function " .. tostring( self.Input ) .. " | " .. tostring( self.Function ) .. " | " .. tostring( self ) .. " failed: " .. err)
+				proxy_error(self, "proxy function " .. tostring( self.Input ) .. " | " .. tostring( self.Function ) .. " | " .. tostring( self ) .. " failed: " .. tostring(err))
+				return
 			end
 
 			local input_number = err
 
 			if not isnumber(input_number) then
-				error("proxy function " .. self.Input .. " does not return a number!")
+				proxy_error(self, "proxy function " .. self.Input .. " does not return a number!")
+				return
+			end
+
+			if self.last_proxy_error then
+				self.last_proxy_error = nil
+				self:SetError()
 			end
 
 			local num = self.Min + (self.Max - self.Min) * ((post_function(((input_number / self.InputDivider) + self.Offset) * self.InputMultiplier, self) + 1) / 2) ^ self.Pow
