@@ -1071,13 +1071,13 @@ do -- serializing
 			local tbl = {self = {ClassName = self.ClassName}, children = {}}
 
 			for _, key in pairs(self:GetStorableVars()) do
-				if key == "Name" and self.Name == "" then
+				if key == "Name" then
 					-- TODO: seperate debug name and name !!!
-					goto CONTINUE
+					-- GetName returns the debug name when Name == "", so read the raw value
+					tbl.self[key] = self.Name
+				else
+					tbl.self[key] = pac.CopyValue(self["Get" .. key](self))
 				end
-
-				tbl.self[key] = pac.CopyValue(self["Get" .. key](self))
-                ::CONTINUE::
 			end
 
 			for _, part in ipairs(self:GetChildren()) do

@@ -135,6 +135,10 @@ function pace.OnPartSelected(part, is_selecting)
 end
 
 function pace.OnVariableChanged(obj, key, val, not_from_editor)
+	if val == nil then
+		val = obj.DefaultVars[key]
+	end
+
 	local valType = type(val)
 	if valType == 'Vector' then
 		val = Vector(val)
