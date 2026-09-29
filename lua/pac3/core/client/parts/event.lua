@@ -326,6 +326,7 @@ PART.OldEvents = {
 	using_physgun = {
 		callback = function(self, ent)
 			ent = self:GetPlayerOwner()
+			if not ent:IsValid() then return false end
 			local pac_drawphysgun_event_part = ent.pac_drawphysgun_event_part
 			if not pac_drawphysgun_event_part then
 				pac_drawphysgun_event_part = {}
