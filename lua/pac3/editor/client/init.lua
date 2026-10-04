@@ -306,6 +306,7 @@ do
 	local entity_GetNW2Bool = entMeta.GetNW2Bool
 	hook.Add("HUDPaint", "pac_in_editor", function()
 		local showCameras = showCameras:GetBool()
+		local showInEditor = showInEditor:GetBool()
 		local eyePos = EyePos()
 		for _, ply in ipairs(player.GetAll()) do
 			local plyTable = entity_GetTable(ply)
