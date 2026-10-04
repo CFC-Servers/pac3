@@ -299,16 +299,19 @@ do
 	end
 
 	local up = Vector(0,0,10000)
+	local upOffset = Vector(0,0,5)
 
 	local entMeta = FindMetaTable("Entity")
 	local entity_GetTable = entMeta.GetTable
 	local entity_GetNW2Bool = entMeta.GetNW2Bool
 	hook.Add("HUDPaint", "pac_in_editor", function()
+		local showCameras = showCameras:GetBool()
+		local eyePos = EyePos()
 		for _, ply in ipairs(player.GetAll()) do
 			local plyTable = entity_GetTable(ply)
 			if ply ~= pac.LocalPlayer and entity_GetNW2Bool(ply, "pac_in_editor") then
 
-				if showCameras:GetInt() == 1 then
+				if showCameras then
 					if plyTable.pac_editor_cam_pos then
 						if not IsValid(plyTable.pac_editor_camera) then
 							plyTable.pac_editor_camera = ClientsideModel("models/tools/camera/camera.mdl")
@@ -327,12 +330,12 @@ do
 						ent:SetAngles(LerpAngle(dt, ent:GetAngles(), plyTable.pac_editor_cam_ang))
 
 						local pos_3d = ent:GetPos()
-						local dist = pos_3d:Distance(EyePos())
+						local dist = pos_3d:Distance(eyePos)
 
 						if dist > 10 then
 							local pos_2d = pos_3d:ToScreen()
 							if pos_2d.visible then
-								local alpha = math.Clamp(pos_3d:Distance(EyePos()) * -1 + 500, 0, 500)/500
+								local alpha = math.Clamp(pos_3d:Distance(eyePos) * -1 + 500, 0, 500)/500
 								if alpha > 0 then
 									draw.DrawText(ply:Nick() .. "'s PAC3 camera", "ChatFont", pos_2d.x, pos_2d.y, Color(255,255,255,alpha*255), 1)
 
@@ -354,9 +357,9 @@ do
 					end
 				end
 
-				if showInEditor:GetInt() == 1 then
-					local pos_3d = ply:NearestPoint(ply:EyePos() + up) + Vector(0,0,5)
-					local alpha = math.Clamp(pos_3d:Distance(EyePos()) * -1 + 500, 0, 500)/500
+				if showInEditor then
+					local pos_3d = ply:NearestPoint(ply:EyePos() + up):Add(upOffset)
+					local alpha = math.Clamp(pos_3d:Distance(eyePos) * -1 + 500, 0, 500)/500
 					if alpha > 0 then
 						local pos_2d = pos_3d:ToScreen()
 						draw.DrawText("In PAC3 Editor", "ChatFont", pos_2d.x, pos_2d.y, Color(255,255,255,alpha*255), 1)
