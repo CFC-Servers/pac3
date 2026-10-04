@@ -358,7 +358,8 @@ do
 				end
 
 				if showInEditor then
-					local pos_3d = ply:NearestPoint(ply:EyePos() + up):Add(upOffset)
+					local pos_3d = ply:NearestPoint(ply:EyePos() + up)
+					pos_3d:Add(upOffset)
 					local alpha = math.Clamp(pos_3d:Distance(eyePos) * -1 + 500, 0, 500)/500
 					if alpha > 0 then
 						local pos_2d = pos_3d:ToScreen()
