@@ -240,6 +240,12 @@ function pace.SubmitPartNow(data, filter)
 				local ply = players[key]
 				if not ply.pac_requested_outfits and ply ~= owner then
 					table.remove(players, key)
+				else
+					local ignoreLookup = ply.pac_outfit_ignore_lookup
+
+					if ignoreLookup and ignoreLookup[owner] then
+						table.remove(players, key)
+					end
 				end
 			end
 
@@ -443,3 +449,7 @@ function pace.RequestOutfits(ply)
 end
 
 concommand.Add("pac_request_outfits", pace.RequestOutfits)
+
+hook.Add("pac_initial_spawn", "pac_update_wear_filter", function(ply)
+	pace.UpdateWearFiltersSingular(ply) -- Prevent wear filters from being skipped for a player who joins and doesn't manually request outfits
+end)

@@ -22,15 +22,19 @@ local function jsonid(ply)
 	return "_" .. pac.Hash(ply)
 end
 
-local function update_ignore()
+local function update_ignore(shouldRequest)
 	for _, ply in ipairs(player.GetHumans()) do
 		pac.ToggleIgnoreEntity(ply, pace.ShouldIgnorePlayer(ply), "wear_filter")
 	end
-end
 
-hook.Add("PlayerSpawn", "pace_outfit_ignore_update", function()
-	update_ignore()
-end)
+	if shouldRequest then
+		RunConsoleCommand("pac_request_outfits")
+	else
+		-- Transmit to server with a delay to coalesce rapid changes.
+		-- Don't need to transmit when requesting as that already makes the server prompt a filter update on everyone.
+		timer.Create( "pace_transmit_outfit_ignore", 4, 1, pace.TransmitOutfitFilter )
+	end
+end
 
 net.Receive("pac.TogglePartDrawing", function()
 	local ent = net.ReadEntity()
@@ -237,7 +241,7 @@ local function player_list_form(name, id, help)
 			store_config(id, tbl)
 
 			if id:StartWith("outfit") then
-				update_ignore()
+				update_ignore(id:EndsWith("whitelist")) -- auto-request if adding to whitelist (store_ is backwards???)
 			end
 		end,
 
@@ -268,7 +272,7 @@ local function player_list_form(name, id, help)
 			store_config(id, tbl)
 
 			if id:StartWith("outfit") then
-				update_ignore()
+				update_ignore(id:EndsWith("blacklist")) -- auto-request if removing from blacklist (store_ is backwards???)
 			end
 		end,
 	})
@@ -277,15 +281,43 @@ local function player_list_form(name, id, help)
 end
 
 do
-	net.Receive("pac_update_playerfilter", function()
+	net.Receive("pac_update_wearfilter", function()
 		local ids = pace.CreateWearFilter()
-		net.Start("pac_update_playerfilter")
+		net.Start("pac_update_wearfilter")
 		net.WriteUInt(#ids, 8)
 
 		for _, val in ipairs(ids) do
 			net.WriteString(val)
 		end
 
+		net.SendToServer()
+	end)
+
+	net.Receive("pac_update_wearfilter_singular_add",function()
+		local ids = pace.CreateWearFilter()
+		local id = net.ReadString()
+		if not table.HasValue(ids, id) then return end
+
+		net.Start("pac_update_wearfilter_singular_add")
+		net.WriteString(id)
+		net.SendToServer()
+	end)
+
+	net.Receive("pac_update_outfitfilter", pace.TransmitOutfitFilter )
+
+	net.Receive("pac_update_outfitfilter_singular_add",function()
+		local id = net.ReadString()
+		local ply = player.GetBySteamID(id)
+		if not IsValid(ply) then return end
+
+		if pace.ShouldIgnorePlayer(ply) then
+			pac.IgnoreEntity(ply, "wear_filter")
+
+			return
+		end
+
+		net.Start("pac_update_outfitfilter_singular_add")
+		net.WriteString(id)
 		net.SendToServer()
 	end)
 
@@ -298,6 +330,28 @@ do
 			end)
 			icon:SetImage(pace.MiscIcons.wear)
 		end
+	end
+
+	function pace.TransmitOutfitFilter()
+		local mode = GetConVar("pace_outfit_filter_mode"):GetString()
+		local ids = {} -- ids of ignored players
+
+		if mode ~= "disabled" then
+			for _, ply in ipairs(player.GetHumans()) do
+				if pace.ShouldIgnorePlayer(ply) then
+					table.insert(ids, ply:SteamID64())
+				end
+			end
+		end
+
+		net.Start("pac_update_outfitfilter")
+		net.WriteUInt(#ids, 8)
+
+		for _, val in ipairs(ids) do
+			net.WriteString(val)
+		end
+
+		net.SendToServer()
 	end
 end
 
@@ -385,7 +439,7 @@ function pace.FillWearSettings(pnl)
 
 			mode.form:SetParent(list)
 
-			update_ignore()
+			update_ignore(true)
 		end
 
 		local mode_str = GetConVar("pace_outfit_filter_mode"):GetString():gsub("_", " ")
