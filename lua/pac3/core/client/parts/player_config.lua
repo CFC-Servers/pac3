@@ -2,7 +2,7 @@ local BUILDER, PART = pac.PartTemplate("base")
 
 PART.ClassName = "player_config"
 PART.Group = "entity"
-PART.Icon = 'icon16/brick.png'
+PART.Icon = "icon16/brick.png"
 
 
 local blood_colors = {
@@ -29,6 +29,7 @@ BUILDER:SetPropertyGroup("generic")
 
 BUILDER:SetPropertyGroup("behavior")
 	BUILDER:GetSet("MuteFootsteps", false)
+	BUILDER:GetSet("AnimationRate", 1)
 
 BUILDER:SetPropertyGroup("death")
 	BUILDER:GetSet("FallApartOnDeath", false)
