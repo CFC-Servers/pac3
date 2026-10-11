@@ -16,6 +16,8 @@ local blacklist = {
 	"function",
 	"repeat",
 	"while",
+	"goto",
+	"::",
 }
 
 local lib =
