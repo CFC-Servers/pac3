@@ -269,6 +269,13 @@ if SERVER then
 		if not ent:IsValid() then return end
 
 		if net.ReadBool() then
+			-- only the player who applied the mutation (to clean it up) or someone
+			-- allowed to modify the entity may restore it
+			local mutator = ent.pac_mutations and ent.pac_mutations[class_name]
+			local is_mutation_owner = mutator and mutator.Owner == ply
+
+			if not is_mutation_owner and not pace.CanPlayerModify(ply, ent) then return end
+
 			emut.RestoreMutations(ply, class_name, ent)
 		else
 			if not pace.CanPlayerModify(ply, ent) then return end
