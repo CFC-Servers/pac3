@@ -790,7 +790,15 @@ do -- serializing
 		end
 
 		function PART:SetProperty(key, val)
-			if self["Set" .. key] ~= nil then
+			-- security: keys can come from outfit data (proxy VariableName), so only
+			-- storable properties may be set through their Set<key> setter. Internal
+			-- setters such as SetPlayerOwner must not be reachable this way.
+			-- Dynamic properties (event arguments, flexes, bodygroups) are generated
+			-- by the part itself and are handled below.
+			local storable = self.StorableVars
+			local is_storable = storable and storable[key] ~= nil
+
+			if is_storable and self["Set" .. key] ~= nil then
 				if self["Get" .. key](self) ~= val then
 					self["Set" .. key](self, val)
 				end
