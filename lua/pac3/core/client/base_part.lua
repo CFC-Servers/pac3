@@ -796,15 +796,16 @@ do -- serializing
 			-- Dynamic properties (event arguments, flexes, bodygroups) are generated
 			-- by the part itself and are handled below.
 			local storable = self.StorableVars
-			local is_storable = storable and storable[key] ~= nil
+			local is_settable = (storable and storable[key] ~= nil) or (self.PartReferenceKeys and self.PartReferenceKeys[key] ~= nil)
 
-			if is_storable and self["Set" .. key] ~= nil then
+			if is_settable and self["Set" .. key] ~= nil then
 				if self["Get" .. key](self) ~= val then
 					self["Set" .. key](self, val)
 				end
 			elseif self.GetDynamicProperties then
-				local info = self:GetDynamicProperties()[key]
-				if info and info then
+				local props = self:GetDynamicProperties()
+				local info = props and props[key]
+				if info then
 					info.set(val)
 				end
 			end
