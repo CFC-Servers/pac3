@@ -119,20 +119,55 @@ function STREAM:Remove()
 end
 
 -- Browser
+-- only numbers and booleans may be formatted into browser JavaScript;
+-- never interpolate raw values into the panel script
+local function format_js_args(...)
+	local args = {}
+
+	for i = 1, select("#", ...) do
+		local value = select(i, ...)
+
+		if isnumber(value) then
+			args[i] = value
+		elseif isbool(value) then
+			args[i] = value and "true" or "false"
+		else
+			return nil
+		end
+	end
+
+	return args
+end
+
+local function format_js_code(self, fmt, ...)
+	local args = format_js_args(...)
+
+	if not args then
+		webaudio.DebugPrint("refusing to format a non-number/boolean argument into browser JavaScript")
+		return nil
+	end
+
+	return string.format("try { streams[%d]%s } catch(e) { lua.print(e.toString()) }", self:GetId(), string.format(fmt, unpack(args)))
+end
+
 function STREAM:Call(fmt, ...)
 	if not self.Loaded then return end
 
-	local code = string.format("try { streams[%d]%s } catch(e) { lua.print(e.toString()) }", self:GetId(), string.format(fmt, ...))
+	local code = format_js_code(self, fmt, ...)
 
-	webaudio.Browser.QueueJavascript(code)
+	if code then
+		webaudio.Browser.QueueJavascript(code)
+	end
 end
 
 function STREAM:CallNow(fmt, ...)
 	if not self.Loaded then return end
 
-	local code = string.format("try { streams[%d]%s } catch(e) { lua.print(e.toString()) }", self:GetId(), string.format(fmt, ...))
+	local code = format_js_code(self, fmt, ...)
 
-	webaudio.Browser.RunJavascript(code)
+	if code then
+		webaudio.Browser.RunJavascript(code)
+	end
 end
 
 function STREAM:HandleBrowserMessage(messageType, ...)
