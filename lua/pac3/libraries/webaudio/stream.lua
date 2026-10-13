@@ -462,10 +462,16 @@ function STREAM:__tostring()
 end
 
 -- Internal browser message handlers
-function STREAM:HandleCallBrowserMessage(methodName, ...)
-	if not self[methodName] then return end
+-- only whitelisted methods may be invoked from browser JavaScript;
+-- the panel JS only ever calls the error callback
+local browser_callable_methods = {OnError = true}
 
-	self[methodName](self, ...)
+function STREAM:HandleCallBrowserMessage(methodName, ...)
+	local method = browser_callable_methods[methodName] and self[methodName]
+
+	if not isfunction(method) then return end
+
+	method(self, ...)
 end
 
 function STREAM:HandleFFTBrowserMessage(serializeFFTData)
