@@ -469,8 +469,31 @@ function STREAM:HandleCallBrowserMessage(methodName, ...)
 end
 
 function STREAM:HandleFFTBrowserMessage(serializeFFTData)
-	local fftArray = CompileString(serializeFFTData, "stream_fft_data")()
-	self.OnFFT(fftArray)
+	-- the fft message carries an array of numbers: parse and validate it
+	-- (the JS side should send plain comma separated numbers)
+	local fftArray = {}
+
+	for number in tostring(serializeFFTData):gmatch("[^,%s;]+") do
+		number = tonumber(number)
+
+		if not isnumber(number) or number ~= number or math.abs(number) == math.huge then
+			webaudio.DebugPrint("invalid fft data received, dropping")
+			return
+		end
+
+		fftArray[#fftArray + 1] = number
+
+		if #fftArray > 1024 then
+			webaudio.DebugPrint("too much fft data received, dropping")
+			return
+		end
+	end
+
+	if #fftArray == 0 then return end
+
+	if isfunction(self.OnFFT) then
+		self.OnFFT(fftArray)
+	end
 end
 
 function STREAM:HandleLoadedBrowserMessage(sampleCount)
