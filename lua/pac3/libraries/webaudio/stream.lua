@@ -119,20 +119,55 @@ function STREAM:Remove()
 end
 
 -- Browser
+-- only numbers and booleans may be formatted into browser JavaScript;
+-- never interpolate raw values into the panel script
+local function format_js_args(...)
+	local args = {}
+
+	for i = 1, select("#", ...) do
+		local value = select(i, ...)
+
+		if isnumber(value) then
+			args[i] = value
+		elseif isbool(value) then
+			args[i] = value and "true" or "false"
+		else
+			return nil
+		end
+	end
+
+	return args
+end
+
+local function format_js_code(self, fmt, ...)
+	local args = format_js_args(...)
+
+	if not args then
+		webaudio.DebugPrint("refusing to format a non-number/boolean argument into browser JavaScript")
+		return nil
+	end
+
+	return string.format("try { streams[%d]%s } catch(e) { lua.print(e.toString()) }", self:GetId(), string.format(fmt, unpack(args)))
+end
+
 function STREAM:Call(fmt, ...)
 	if not self.Loaded then return end
 
-	local code = string.format("try { streams[%d]%s } catch(e) { lua.print(e.toString()) }", self:GetId(), string.format(fmt, ...))
+	local code = format_js_code(self, fmt, ...)
 
-	webaudio.Browser.QueueJavascript(code)
+	if code then
+		webaudio.Browser.QueueJavascript(code)
+	end
 end
 
 function STREAM:CallNow(fmt, ...)
 	if not self.Loaded then return end
 
-	local code = string.format("try { streams[%d]%s } catch(e) { lua.print(e.toString()) }", self:GetId(), string.format(fmt, ...))
+	local code = format_js_code(self, fmt, ...)
 
-	webaudio.Browser.RunJavascript(code)
+	if code then
+		webaudio.Browser.RunJavascript(code)
+	end
 end
 
 function STREAM:HandleBrowserMessage(messageType, ...)
@@ -427,15 +462,44 @@ function STREAM:__tostring()
 end
 
 -- Internal browser message handlers
-function STREAM:HandleCallBrowserMessage(methodName, ...)
-	if not self[methodName] then return end
+-- only whitelisted methods may be invoked from browser JavaScript;
+-- the panel JS only ever calls the error callback
+local browser_callable_methods = {OnError = true}
 
-	self[methodName](self, ...)
+function STREAM:HandleCallBrowserMessage(methodName, ...)
+	local method = browser_callable_methods[methodName] and self[methodName]
+
+	if not isfunction(method) then return end
+
+	method(self, ...)
 end
 
 function STREAM:HandleFFTBrowserMessage(serializeFFTData)
-	local fftArray = CompileString(serializeFFTData, "stream_fft_data")()
-	self.OnFFT(fftArray)
+	-- the fft message carries an array of numbers: parse and validate it
+	-- (the JS side should send plain comma separated numbers)
+	local fftArray = {}
+
+	for number in tostring(serializeFFTData):gmatch("[^,%s;]+") do
+		number = tonumber(number)
+
+		if not isnumber(number) or number ~= number or math.abs(number) == math.huge then
+			webaudio.DebugPrint("invalid fft data received, dropping")
+			return
+		end
+
+		fftArray[#fftArray + 1] = number
+
+		if #fftArray > 1024 then
+			webaudio.DebugPrint("too much fft data received, dropping")
+			return
+		end
+	end
+
+	if #fftArray == 0 then return end
+
+	if isfunction(self.OnFFT) then
+		self.OnFFT(fftArray)
+	end
 end
 
 function STREAM:HandleLoadedBrowserMessage(sampleCount)

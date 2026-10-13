@@ -667,8 +667,35 @@ do
 	end
 
 	-- Browser
+	-- only numbers and booleans may be formatted into browser JavaScript;
+	-- never interpolate raw values into the panel script
+	local function format_js_args(...)
+		local args = {}
+
+		for i = 1, select("#", ...) do
+			local value = select(i, ...)
+
+			if isnumber(value) then
+				args[i] = value
+			elseif isbool(value) then
+				args[i] = value and "true" or "false"
+			else
+				return nil
+			end
+		end
+
+		return args
+	end
+
 	function META:Call(fmt, ...)
-		local code = string.format("var id = %d; try { if (streams[id]) { streams[id]%s } } catch(e) { dprint('streams[' + id + '] ' + e.toString()) }", self:GetId(), string.format(fmt, ...))
+		local args = format_js_args(...)
+
+		if not args then
+			dprint("refusing to format a non-number/boolean argument into browser JavaScript")
+			return
+		end
+
+		local code = string.format("var id = %d; try { if (streams[id]) { streams[id]%s } } catch(e) { dprint('streams[' + id + '] ' + e.toString()) }", self:GetId(), string.format(fmt, unpack(args)))
 
 		run_javascript(code, self)
 	end
@@ -977,15 +1004,44 @@ do
 	end
 
 	-- Internal browser message handlers
-	function META:HandleCallBrowserMessage(methodName, ...)
-		if not self[methodName] then return end
+	-- only whitelisted methods may be invoked from browser JavaScript;
+	-- the panel JS only ever calls the error callback
+	local browser_callable_methods = {OnError = true}
 
-		self[methodName](self, ...)
+	function META:HandleCallBrowserMessage(methodName, ...)
+		local method = browser_callable_methods[methodName] and self[methodName]
+
+		if not isfunction(method) then return end
+
+		method(self, ...)
 	end
 
 	function META:HandleFFTBrowserMessage(serializeFFTData)
-		local fftArray = CompileString(serializeFFTData, "stream_fft_data")()
-		self.OnFFT(fftArray)
+		-- the fft message carries an array of numbers: parse and validate it
+		-- (the JS side should send plain comma separated numbers)
+		local fftArray = {}
+
+		for number in tostring(serializeFFTData):gmatch("[^,%s;]+") do
+			number = tonumber(number)
+
+			if not isnumber(number) or number ~= number or math.abs(number) == math.huge then
+				dprint("invalid fft data received, dropping")
+				return
+			end
+
+			fftArray[#fftArray + 1] = number
+
+			if #fftArray > 1024 then
+				dprint("too much fft data received, dropping")
+				return
+			end
+		end
+
+		if #fftArray == 0 then return end
+
+		if isfunction(self.OnFFT) then
+			self.OnFFT(fftArray)
+		end
 	end
 
 	function META:HandleLoadedBrowserMessage(sampleCount)

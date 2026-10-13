@@ -116,7 +116,9 @@ BIND("Radius",    "SetSourceRadius" )
 BIND("FilterType")
 BIND("FilterFraction")
 
-BIND("Echo")
+-- outfit data can arrive with unexpected types for stream vars;
+-- coerce Echo to a boolean before it is forwarded to the stream
+BIND("Echo", nil, tobool)
 BIND("EchoDelay")
 BIND("EchoFeedback", nil, function(n) return math.Clamp(n, 0, 0.99) end)
 
