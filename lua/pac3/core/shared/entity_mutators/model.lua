@@ -3,7 +3,7 @@ local MUTATOR = {}
 MUTATOR.ClassName = "model"
 MUTATOR.UpdateRate = 0.25
 
-local CL_MODEL_ONLY = CreateConVar('pac_cl_mdls', '0', CLIENT and {FCVAR_REPLICATED} or {FCVAR_ARCHIVE, FCVAR_REPLICATED}, 'Use CL models instead of serverside models.')
+local CL_MODEL_ONLY = CreateConVar("pac_cl_mdls", "0", CLIENT and {FCVAR_REPLICATED} or {FCVAR_ARCHIVE, FCVAR_REPLICATED}, "Use CL models instead of serverside models.")
 
 local function fixLP( ent )
 	if not CL_MODEL_ONLY:GetBool() then return end
@@ -15,10 +15,8 @@ local function fixLP( ent )
 end
 
 function MUTATOR:WriteArguments(path)
-	assert(isstring(path), "path must be a string")
-
-	net.WriteString(path)
-	net.WriteString(self.Entity:GetModel())
+	net.WriteString(tostring(path))
+	net.WriteString(self.Entity:GetModel() or "")
 end
 
 function MUTATOR:ReadArguments()
