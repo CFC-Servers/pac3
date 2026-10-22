@@ -433,12 +433,15 @@ function pace.FillWearSettings(pnl)
 				mode.form = generic_form("You will see everyone's outfits.")
 			end
 
+			local oldValue = GetConVar("pace_outfit_filter_mode"):GetString():gsub("_", " ")
+
 			-- and set cvar to update filter
-			GetConVar("pace_outfit_filter_mode"):SetString(value:gsub(" ", "_"))
+			if value ~= oldValue then
+				GetConVar("pace_outfit_filter_mode"):SetString(value:gsub(" ", "_"))
+				update_ignore(true)
+			end
 
 			mode.form:SetParent(list)
-
-			update_ignore(true)
 		end
 
 		local mode_str = GetConVar("pace_outfit_filter_mode"):GetString():gsub("_", " ")
