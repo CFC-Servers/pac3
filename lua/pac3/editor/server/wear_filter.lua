@@ -109,7 +109,7 @@ pace.PCallNetReceive(net.Receive, "pac_update_outfitfilter", function(len, ply)
 	local filter = {}
 
 	for i = 1, sizeof do
-		local p = player.GetBySteamID64(net.ReadString())
+		local p = player.GetBySteamID(net.ReadString())
 
 		if IsValid(p) then
 			filter[p] = true
@@ -123,7 +123,7 @@ pace.PCallNetReceive(net.Receive, "pac_update_outfitfilter_singular_add", functi
 	if not checkCooldown(ply, "outfitfilter_singular", "singular outfit filters") then return end
 
 	local lookup = ply.pac_outfit_ignore_lookup or {}
-	local p = player.GetBySteamID64(net.ReadString())
+	local p = player.GetBySteamID(net.ReadString())
 	if not IsValid(p) or lookup[p] then return end
 
 	lookup[p] = true
