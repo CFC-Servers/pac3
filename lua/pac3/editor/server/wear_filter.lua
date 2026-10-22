@@ -109,7 +109,7 @@ pace.PCallNetReceive(net.Receive, "pac_update_outfitfilter", function(len, ply)
 	local filter = {}
 
 	for i = 1, sizeof do
-		local p = player.GetBySteamID(net.ReadString())
+		local p = player.GetBySteamID64(net.ReadString())
 
 		if IsValid(p) then
 			filter[p] = true
