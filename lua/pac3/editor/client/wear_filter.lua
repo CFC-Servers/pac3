@@ -303,8 +303,6 @@ do
 		net.SendToServer()
 	end)
 
-	net.Receive("pac_update_outfitfilter", pace.TransmitOutfitFilter )
-
 	net.Receive("pac_update_outfitfilter_singular_add",function()
 		local id = net.ReadString()
 		local ply = player.GetBySteamID(id)
@@ -353,6 +351,8 @@ do
 
 		net.SendToServer()
 	end
+
+	net.Receive("pac_update_outfitfilter", pace.TransmitOutfitFilter )
 end
 
 function pace.FillWearSettings(pnl)
