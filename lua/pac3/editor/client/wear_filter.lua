@@ -307,12 +307,9 @@ do
 		local id = net.ReadString()
 		local ply = player.GetBySteamID(id)
 		if not IsValid(ply) then return end
+		if not pace.ShouldIgnorePlayer(ply) then return end
 
-		if pace.ShouldIgnorePlayer(ply) then
-			pac.IgnoreEntity(ply, "wear_filter")
-
-			return
-		end
+		pac.IgnoreEntity(ply, "wear_filter")
 
 		net.Start("pac_update_outfitfilter_singular_add")
 		net.WriteString(id)
