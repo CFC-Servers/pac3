@@ -150,6 +150,8 @@ CreateClientConVar("pace_wear_filter_mode", "disabled")
 CreateClientConVar("pace_outfit_filter_mode", "disabled")
 
 function pace.ShouldIgnorePlayer(ply)
+	if ply == LocalPlayer() then return false end
+
 	local mode = GetConVar("pace_outfit_filter_mode"):GetString()
 
 	if mode == "steam_friends" then
