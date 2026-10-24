@@ -51,6 +51,10 @@ local function net_write_table(tbl, recipients)
 	buffer:writeTable(tbl)
 
 	local data = buffer:getString()
+	if not istable(recipients) then
+		recipients = recipients and {recipients} or nil
+	end
+
 	local ok, err = pcall(net.WriteStream, data, nil, nil, recipients)
 
 	if not ok then
