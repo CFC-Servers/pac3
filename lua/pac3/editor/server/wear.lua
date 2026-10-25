@@ -234,42 +234,42 @@ function pace.SubmitPartNow(data, filter)
 		end
 
 		players = filter or players
+		if not players then return true end
 
-		if istable(players) then
-			for key = #players, 1, -1 do
-				local ply = players[key]
-				if not ply.pac_requested_outfits and ply ~= owner then
+		if type(players) == "Player" then
+			players = { players }
+		end
+
+		for key = #players, 1, -1 do
+			local ply = players[key]
+			if not ply.pac_requested_outfits and ply ~= owner then
+				table.remove(players, key)
+			else
+				local ignoreLookup = ply.pac_outfit_ignore_lookup
+
+				if ignoreLookup and ignoreLookup[owner] then
 					table.remove(players, key)
-				else
-					local ignoreLookup = ply.pac_outfit_ignore_lookup
-
-					if ignoreLookup and ignoreLookup[owner] then
-						table.remove(players, key)
-					end
 				end
 			end
+		end
 
-			if pace.GlobalBans and owner:IsValid() then
-				local owner_steamid = owner:SteamID()
+		if pace.GlobalBans and owner:IsValid() then
+			local owner_steamid = owner:SteamID()
 
-				for key, ply in pairs(players) do
-					local steamid = ply:SteamID()
+			for key, ply in pairs(players) do
+				local steamid = ply:SteamID()
 
-					for var in pairs(pace.GlobalBans) do
-						if var == steamid or istable(var) and (table.HasValue(var, steamid) or table.HasValue(var, util.CRC(ply:IPAddress():match("(.+):") or ""))) then
-							table.remove(players, key)
+				for var in pairs(pace.GlobalBans) do
+					if var == steamid or istable(var) and (table.HasValue(var, steamid) or table.HasValue(var, util.CRC(ply:IPAddress():match("(.+):") or ""))) then
+						table.remove(players, key)
 
-							if owner_steamid == steamid then
-								pac.Message("Dropping data transfer request by '", ply:Nick(), "' due to a global PAC ban.")
-								return false, "You have been globally banned from using PAC. See global_bans.lua for more info."
-							end
+						if owner_steamid == steamid then
+							pac.Message("Dropping data transfer request by '", ply:Nick(), "' due to a global PAC ban.")
+							return false, "You have been globally banned from using PAC. See global_bans.lua for more info."
 						end
 					end
 				end
 			end
-		elseif type(players) == "Player" and (not players.pac_requested_outfits and players ~= owner) then
-			data.transmissionID = nil
-			return true
 		end
 
 		if not players or istable(players) and not next(players) then return true end
