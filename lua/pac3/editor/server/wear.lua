@@ -234,7 +234,10 @@ function pace.SubmitPartNow(data, filter)
 		end
 
 		players = filter or players
-		if not players then return true end
+		if not players then
+			data.transmissionID = nil
+			return true
+		end
 
 		if type(players) == "Player" then
 			players = { players }
@@ -265,6 +268,7 @@ function pace.SubmitPartNow(data, filter)
 
 						if owner_steamid == steamid then
 							pac.Message("Dropping data transfer request by '", ply:Nick(), "' due to a global PAC ban.")
+							data.transmissionID = nil
 							return false, "You have been globally banned from using PAC. See global_bans.lua for more info."
 						end
 					end
@@ -272,7 +276,10 @@ function pace.SubmitPartNow(data, filter)
 			end
 		end
 
-		if not players or istable(players) and not next(players) then return true end
+		if not players or istable(players) and not next(players) then
+			data.transmissionID = nil
+			return true
+		end
 
 		-- Alternative transmission system
 		local ret = hook.Run("pac_SendData", players, data)
