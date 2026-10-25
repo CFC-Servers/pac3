@@ -45,9 +45,9 @@ local function checkCooldown(ply, cooldownID, cooldownDisplay)
 	local curCooldown = ply[varNameCD]
 
 	if curCooldown and curCooldown > CurTime() then
-		local logCooldown = ply[varNameLogCD]
+		local logCooldown = ply[varNameLogCD] or 0
 
-		if logCooldown and logCooldown < CurTime() then
+		if logCooldown < CurTime() then
 			pac.Message("Player ", ply, " tried to submit " .. cooldownDisplay .. " too quickly, dropping.")
 			ply[varNameLogCD] = CurTime() + 1
 		end
