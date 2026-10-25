@@ -238,39 +238,52 @@ function pace.SubmitPartNow(data, filter)
 		end
 
 		players = filter or players
-
-		if istable(players) then
-			for key = #players, 1, -1 do
-				local ply = players[key]
-				if not ply.pac_requested_outfits and ply ~= owner then
-					table.remove(players, key)
-				end
-			end
-
-			if pace.GlobalBans and owner:IsValid() then
-				local owner_steamid = owner:SteamID()
-
-				for key, ply in pairs(players) do
-					local steamid = ply:SteamID()
-
-					for var in pairs(pace.GlobalBans) do
-						if var == steamid or istable(var) and (table.HasValue(var, steamid) or table.HasValue(var, util.CRC(ply:IPAddress():match("(.+):") or ""))) then
-							table.remove(players, key)
-
-							if owner_steamid == steamid then
-								pac.Message("Dropping data transfer request by '", ply:Nick(), "' due to a global PAC ban.")
-								return false, "You have been globally banned from using PAC. See global_bans.lua for more info."
-							end
-						end
-					end
-				end
-			end
-		elseif type(players) == "Player" and (not players.pac_requested_outfits and players ~= owner) then
+		if not players then
 			data.transmissionID = nil
 			return true
 		end
 
-		if not players or istable(players) and not next(players) then return true end
+		if type(players) == "Player" then
+			players = { players }
+		end
+
+		for key = #players, 1, -1 do
+			local ply = players[key]
+			if not ply.pac_requested_outfits and ply ~= owner then
+				table.remove(players, key)
+			else
+				local ignoreLookup = ply.pac_outfit_ignore_lookup
+
+				if ignoreLookup and ignoreLookup[owner] then
+					table.remove(players, key)
+				end
+			end
+		end
+
+		if pace.GlobalBans and owner:IsValid() then
+			local owner_steamid = owner:SteamID()
+
+			for key, ply in pairs(players) do
+				local steamid = ply:SteamID()
+
+				for var in pairs(pace.GlobalBans) do
+					if var == steamid or istable(var) and (table.HasValue(var, steamid) or table.HasValue(var, util.CRC(ply:IPAddress():match("(.+):") or ""))) then
+						table.remove(players, key)
+
+						if owner_steamid == steamid then
+							pac.Message("Dropping data transfer request by '", ply:Nick(), "' due to a global PAC ban.")
+							data.transmissionID = nil
+							return false, "You have been globally banned from using PAC. See global_bans.lua for more info."
+						end
+					end
+				end
+			end
+		end
+
+		if not players or istable(players) and not next(players) then
+			data.transmissionID = nil
+			return true
+		end
 
 		-- Alternative transmission system
 		local ret = hook.Run("pac_SendData", players, data)
@@ -435,6 +448,7 @@ function pace.RequestOutfits(ply)
 	ply.pac_gonna_receive_outfits = true
 
 	pace.UpdateWearFilters()
+	ply:ConCommand( "pac_auto_request 0" ) -- Request done, stop auto-requesting
 
 	timer.Simple(6, function()
 		if not IsValid(ply) then return end
@@ -455,3 +469,16 @@ function pace.RequestOutfits(ply)
 end
 
 concommand.Add("pac_request_outfits", pace.RequestOutfits)
+
+hook.Add("pac_initial_spawn", "pac_update_wear_filter", function(ply)
+	pace.UpdateWearFiltersSingular(ply) -- Prevent wear filters from being skipped for a player who joins and doesn't manually request outfits
+end)
+
+-- Auto-request on behalf of the player once they are off cooldown
+timer.Create("pac_auto_request_outfits", 5, 0, function()
+	for _, ply in player.Iterator() do
+		if ply:GetInfoNum("pac_auto_request", 0) == 1 then
+			pace.RequestOutfits(ply)
+		end
+	end
+end)

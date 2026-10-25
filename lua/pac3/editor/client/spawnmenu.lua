@@ -98,7 +98,7 @@ function pace.ClientOptionsMenu(self)
 
 	pace.SpawnlistBrowser = browser
 
-	self:Button("request outfits", "pac_request_outfits")
+	self:Button("request outfits", "pac_auto_request", "1")
 end
 
 function pace.ClientSettingsMenu(self)
