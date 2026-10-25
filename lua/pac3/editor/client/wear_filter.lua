@@ -2,6 +2,8 @@ local list_form = include("panels/list.lua")
 
 local cache = {}
 
+CreateClientConVar("pac_auto_request", "0", false, true, "Internal convar. Tells the server you want to request PAC outfits when possible.", 0, 1)
+
 local function store_config(id, tbl)
 	file.CreateDir("pac/config")
 	file.Write("pac/config/"..id..".json", util.TableToJSON(tbl))
@@ -28,7 +30,7 @@ local function update_ignore(shouldRequest)
 	end
 
 	if shouldRequest then
-		RunConsoleCommand("pac_request_outfits")
+		RunConsoleCommand("pac_auto_request", "1")
 	else
 		-- Transmit to server with a delay to coalesce rapid changes.
 		-- Don't need to transmit when requesting as that already makes the server prompt a filter update on everyone.

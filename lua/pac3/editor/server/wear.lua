@@ -436,6 +436,7 @@ function pace.RequestOutfits(ply)
 	ply.pac_gonna_receive_outfits = true
 
 	pace.UpdateWearFilters()
+	ply:ConCommand( "pac_auto_request 0" ) -- Request done, stop auto-requesting
 
 	timer.Simple(6, function()
 		if not IsValid(ply) then return end
@@ -459,4 +460,13 @@ concommand.Add("pac_request_outfits", pace.RequestOutfits)
 
 hook.Add("pac_initial_spawn", "pac_update_wear_filter", function(ply)
 	pace.UpdateWearFiltersSingular(ply) -- Prevent wear filters from being skipped for a player who joins and doesn't manually request outfits
+end)
+
+-- Auto-request on behalf of the player once they are off cooldown
+timer.Create("pac_auto_request_outfits", 5, 0, function()
+	for _, ply in player.Iterator() do
+		if ply:GetInfoNum("pac_auto_request", 0) == 1 then
+			pace.RequestOutfits(ply)
+		end
+	end
 end)
