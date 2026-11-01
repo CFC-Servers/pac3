@@ -149,8 +149,6 @@ do -- from server
 				dupepart:Remove()
 			end
 
-			if not IsValid(owner) or not owner:IsPlayer() or pac.IsEntityIgnored(owner) then return end
-
 			owner.pac_render_time_exceeded = false
 
 			-- specify "level" as 1 so we can delay CalcShowHide recursive call until we are ready
