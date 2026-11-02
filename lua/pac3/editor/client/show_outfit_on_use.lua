@@ -47,7 +47,7 @@ do
 	})
 
 	hook.Add("HUDPaint", "pac_onuse_only", function()
-		if not pac_IsPacOnUseOnly() then return end
+		if not pac.IsEnabled() or not pac_IsPacOnUseOnly() then return end
 		local ply = pac.LocalPlayer
 		local eyes, aim = ply:EyePos(), ply:GetAimVector()
 
