@@ -39,5 +39,5 @@ jobs:
           type: ServerContent
           tag1: build
         env:
-          STEAM_USERNAME: ${{ secrets.WORKSHOP_UPLOADER_PASSWORD }}
-          STEAM_PASSWORD: ${{ secrets.WORKSHOP_UPLOADER_USERNAME }}
+          STEAM_USERNAME: ${{ secrets.WORKSHOP_UPLOADER_USERNAME }}
+          STEAM_PASSWORD: ${{ secrets.WORKSHOP_UPLOADER_PASSWORD }}
