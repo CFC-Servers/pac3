@@ -28,6 +28,7 @@ jobs:
           rm -fv $GITHUB_WORKSPACE/project/icon.jpg
           rm -fv $GITHUB_WORKSPACE/project/addon.json
           rm -fv $GITHUB_WORKSPACE/project/CONTRIBUTING.md
+          rm -fv $GITHUB_WORKSPACE/project/models/pac/female_base_src.7z
           rm -rfv $GITHUB_WORKSPACE/project/lua
 
       - name: Upload to Workshop
