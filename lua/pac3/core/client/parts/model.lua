@@ -779,11 +779,13 @@ function PART:ApplyMatrix()
 	end
 
 	if ent:IsPlayer() or ent:IsNPC() then
-		pac.emut.MutateEntity(self:GetPlayerOwner(), "size", ent, self.Size, {
-			StandingHullHeight = self.StandingHullHeight,
-			CrouchingHullHeight = self.CrouchingHullHeight,
-			HullWidth = self.HullWidth,
-		})
+		if self.StandingHullHeight and self.CrouchingHullHeight and self.HullWidth then
+			pac.emut.MutateEntity(self:GetPlayerOwner(), "size", ent, self.Size, {
+				StandingHullHeight = self.StandingHullHeight,
+				CrouchingHullHeight = self.CrouchingHullHeight,
+				HullWidth = self.HullWidth,
+			})
+		end
 
 		if self.Size == 1 and self.Scale == vec_one then
 			if self.InverseKinematics then
